@@ -1,0 +1,15 @@
+- name: Install basic fail2ban packages
+  package:
+    name: fail2ban
+    state: present
+
+- name: Sync fail2ban config files
+  register: fail2ban_conf
+  copy:
+    src: conf/
+    dest: /etc/fail2ban
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Restart fail2ban

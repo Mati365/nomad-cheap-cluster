@@ -1,0 +1,45 @@
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
+
+defaults = {
+  prefix: 'test-app',
+  net: '192.168.56',
+  box: 'generic/debian11',
+  ram: 5024,
+  user: 'ansible',
+  ssh: {
+    pub: File.readlines('../ansible/keys/ansible/id_rsa.pub').first.strip
+  },
+}
+
+machines = [
+  { name: 'node', ip: "#{defaults[:net]}.10" },
+]
+
+bootstrap_script = <<-SHELL
+  groupadd wheel
+  useradd -m -G sudo,wheel -s /bin/bash #{defaults[:user]}
+  echo "%wheel ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+  touch ~#{defaults[:user]}/.hushlogin
+  mkdir -p ~#{defaults[:user]}/.ssh
+  echo #{defaults[:ssh][:pub]} > ~#{defaults[:user]}/.ssh/authorized_keys
+
+  chown -R #{defaults[:user]}:#{defaults[:user]} ~#{defaults[:user]}/.ssh
+  chmod 0700 ~#{defaults[:user]}/.ssh
+  chmod 0600 ~#{defaults[:user]}/.ssh/authorized_keys
+SHELL
+
+Vagrant.configure('2') do |config|
+  machines.each do |machine|
+    config.vm.define "#{defaults[:prefix]}-#{machine[:name]}" do |node|
+      node.vm.provider :libvirt do |provider|
+        provider.memory = machine[:ram] || defaults[:ram];
+      end
+
+      node.vm.network :private_network, ip: machine[:ip]
+      node.vm.box = machine[:box] || defaults[:box]
+      node.vm.provision 'shell', inline: bootstrap_script
+      node.vm.post_up_message = "SSH: ssh #{defaults[:user]}@#{machine[:ip]}"
+    end
+  end
+end

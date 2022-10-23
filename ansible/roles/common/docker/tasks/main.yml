@@ -1,0 +1,86 @@
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+    state: present
+
+- name: Update apt and install docker-ce
+  apt:
+    name:
+      - docker-ce
+      - docker-compose-plugin
+    state: latest
+    update_cache: true
+
+- name: Install docker pip module
+  pip:
+    name: docker
+
+- name: Create docker group
+  group:
+    name: docker
+    state: present
+
+- name: Copy docker config
+  copy:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Copy docker service
+  copy:
+    src: docker.service
+    dest: /lib/systemd/system/
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Always restart docker server
+  command: /bin/true
+  notify:
+    - Restart docker
+
+- name: Copy remove dangling images script
+  copy:
+    src: remove-dangling-images.sh
+    dest: /usr/bin/
+    owner: root
+    group: root
+    mode: 0744
+
+- name: Copy remove dangling images service
+  copy:
+    src: remove-dangling-images.service
+    dest: /lib/systemd/system/
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Copy remove dangling images timer
+  copy:
+    src: remove-dangling-images.timer
+    dest: /lib/systemd/system/
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Enable remove dangling images service
+  systemd:
+    daemon_reload: true
+
+- name: Enable remove dangling images service
+  systemd:
+    name: remove-dangling-images.service
+    enabled: true
+
+- name: Enable remove dangling images timer
+  systemd:
+    name: remove-dangling-images.timer
+    state: restarted
+    enabled: true

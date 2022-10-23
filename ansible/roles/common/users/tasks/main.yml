@@ -1,0 +1,36 @@
+- name: Create user groups
+  group:
+    name: "{{ item.name }}"
+    state: present
+  with_items: "{{ all_groups }}"
+
+- name: Create basic users accounts
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups }}"
+    shell: /bin/bash
+    append: yes
+  with_items: "{{ all_users }}"
+
+- name: Add SSH authorized keys to users
+  include_tasks: copy-auth-keys-for-user.yml
+  loop: "{{ all_users }}"
+  loop_control:
+    loop_var: user
+
+- name: Disable login messages
+  become_user: "{{ user.name }}"
+  file:
+    path: "~{{ user.name }}/.hushlogin"
+    state: touch
+  loop: "{{ all_users }}"
+  loop_control:
+    loop_var: user
+
+- name: Run deploy hosts keyscan
+  become_user: deploy
+  shell: ssh-keyscan {{ host }} >> ~/.ssh/known_hosts
+  loop_control:
+    loop_var: host
+  loop:
+    - github.com

@@ -1,0 +1,19 @@
+- name: Ensure resolv.conf is mutable
+  when: immutable_resolve is defined
+  file:
+    path: /etc/resolv.conf
+    attr: -i
+
+- name: Sync resolv.conf file
+  copy:
+    src: resolv.conf
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Ensure resolv.conf is immutable
+  file:
+    path: /etc/resolv.conf
+    attr: +i
+  register: immutable_resolve

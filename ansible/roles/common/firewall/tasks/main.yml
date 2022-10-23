@@ -1,0 +1,29 @@
+- name: Ensure iptables-persistent is installed
+  apt:
+    name: iptables-persistent
+    state: present
+
+- name: Ensure iptables folder exists
+  file:
+    path: /etc/iptables
+    state: directory
+
+- name: Copy basic iptables config
+  template:
+    src: rules.v4
+    dest: /etc/iptables/rules.v4
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Copy restore routes script
+  copy:
+    src: restore-iptables-rules.sh
+    dest: /usr/bin/
+    owner: root
+    group: root
+    mode: 0744
+
+- name: Apply some rules
+  command: /bin/true
+  notify: Restore firewall rules

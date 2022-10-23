@@ -1,0 +1,26 @@
+- hosts: web
+  gather_facts: false
+  tasks:
+    - name: Wait for SSH
+      wait_for_connection:
+        delay: 0
+        timeout: 4000
+
+- hosts: web
+  tags: web
+  gather_facts: true
+  become: true
+  module_defaults:
+    apt:
+      install_recommends: no
+  roles:
+    - role: common/dns
+    - role: common/utils
+    - role: common/sshd
+    - role: common/firewall
+    - role: common/docker
+    - role: common/users
+    - role: common/fish
+    - role: common/fail2ban
+    - role: common/node
+    - role: common/www

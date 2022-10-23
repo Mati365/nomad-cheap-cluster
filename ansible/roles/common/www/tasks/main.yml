@@ -1,0 +1,9 @@
+- name: Create root skeleton directories if not exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: deploy
+    group: webusers
+    mode: 0770
+  loop:
+    - "{{ remote_shared_paths.www }}"

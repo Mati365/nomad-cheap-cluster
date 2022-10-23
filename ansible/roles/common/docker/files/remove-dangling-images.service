@@ -1,0 +1,10 @@
+[Unit]
+Description=Removes docker dangling images
+Wants=remove-dangling-images.timer
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/remove-dangling-images.sh
+
+[Install]
+WantedBy=multi-user.target

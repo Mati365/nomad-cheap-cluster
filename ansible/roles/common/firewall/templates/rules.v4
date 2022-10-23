@@ -1,0 +1,14 @@
+*filter
+:INPUT DROP [1:40]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:CNI-FORWARD - [0:0]
+:DOCKER-USER - [0:0]
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+-A OUTPUT -p tcp -m tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+-A FORWARD -j ACCEPT
+-I DOCKER-USER -i {{ ip.interface.default }} -p tcp --dport 5000:32767 -j DROP
+-A DOCKER-USER -j RETURN
+COMMIT

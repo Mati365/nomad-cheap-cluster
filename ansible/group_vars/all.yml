@@ -1,0 +1,17 @@
+node_version: 18
+
+local_paths:
+  all_keys: "{{ playbook_dir }}/keys"
+
+remote_shared_paths:
+  www: /var/www
+
+all_groups:
+  - name: webusers
+
+all_users:
+  - name: deploy
+    groups: wheel,webusers,docker
+
+  - name: web
+    groups: webusers
