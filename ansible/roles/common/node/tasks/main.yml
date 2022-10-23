@@ -14,14 +14,11 @@
     state: latest
     update_cache: true
 
-- name: Install yarn
+- name: Install global packages
   npm:
-    name: yarn
+    name: "{{ item }}"
     state: present
     global: true
-
-- name: Install zx
-  npm:
-    name: zx
-    state: present
-    global: true
+  with_items:
+    - yarn
+    - zx
