@@ -9,10 +9,9 @@
     state: present
 
 - name: Update apt and install nodejs
-  apt:
+  package:
     pkg: nodejs
-    state: latest
-    update_cache: true
+    state: present
 
 - name: Install global packages
   npm:

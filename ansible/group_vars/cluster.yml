@@ -1,0 +1,19 @@
+server: front
+
+docker:
+  volumes_path: "{{ remote_paths.www }}/volumes"
+
+all_groups:
+  - name: webusers
+  - name: deployusers
+  - name: docker
+
+all_users:
+  - name: ci
+    groups: webusers,deployusers,docker
+
+  - name: deploy
+    groups: deployusers,webusers,wheel,docker
+
+  - name: web
+    groups: webusers

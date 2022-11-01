@@ -10,6 +10,38 @@ Generate ansible RSA key in `ansible/keys/ansible/` and then:
 ./start-dev.sh --create-vm
 ```
 
+## Useful commands
+
+### Nomad
+
+List server members:
+
+```bash
+sudo nomad server members \
+  -address=https://localhost:4646 \
+  -ca-path=/var/www/nomad/tls/nomad-ca.pem \
+  -client-cert=/var/www/nomad/tls/server.pem \
+  -client-key=/var/www/nomad/tls/server-key.pem \
+  -token=$(sudo jq -r '.SecretID' /var/www/nomad/server/bootstrap.json)
+```
+
+List node members:
+
+```bash
+sudo nomad node status \
+  -address=https://localhost:4646 \
+  -ca-path=/var/www/nomad/tls/nomad-ca.pem \
+  -client-cert=/var/www/nomad/tls/server.pem \
+  -client-key=/var/www/nomad/tls/server-key.pem \
+  -token=$(sudo jq -r '.SecretID' /var/www/nomad/server/bootstrap.json)
+```
+
+### Consul
+
+```bash
+consul members -token=$(sudo cat /var/www/consul/tokens/bootstrap.key)
+```
+
 ## License
 
 MIT License

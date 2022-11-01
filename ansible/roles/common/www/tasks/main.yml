@@ -4,6 +4,6 @@
     state: directory
     owner: deploy
     group: webusers
-    mode: 0770
+    mode: 0755
   loop:
-    - "{{ remote_shared_paths.www }}"
+    - "{{ remote_paths.www }}"

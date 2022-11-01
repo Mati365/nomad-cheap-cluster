@@ -7,20 +7,45 @@
         timeout: 4000
 
 - hosts: web
-  tags: web
+  tags: common
   gather_facts: true
   become: true
   module_defaults:
     apt:
       install_recommends: no
   roles:
+    - role: common/firewall
     - role: common/dns
     - role: common/utils
     - role: common/sshd
-    - role: common/firewall
-    - role: common/docker
     - role: common/users
     - role: common/fish
     - role: common/fail2ban
     - role: common/node
     - role: common/www
+
+- hosts: cluster
+  tags: cluster
+  gather_facts: true
+  become: true
+  roles:
+    - role: cluster/docker/daemon
+    - role: cluster/docker/skeleton
+    - role: cluster/nomad/shared
+    - role: cluster/consul/shared
+
+- hosts: server
+  tags: cluster
+  gather_facts: true
+  become: true
+  roles:
+    - role: cluster/consul/server
+    - role: cluster/nomad/server
+
+- hosts: client
+  tags: cluster
+  gather_facts: true
+  become: true
+  roles:
+    - role: cluster/consul/client
+    - role: cluster/nomad/client

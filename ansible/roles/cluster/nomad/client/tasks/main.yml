@@ -1,0 +1,56 @@
+- name: Create nomad client data dir
+  file:
+    path: "{{ nomad.remote.client.root_dir }}/data"
+    state: directory
+    owner: nomad
+    group: nomad
+    mode: 0755
+
+- name: Copy nomad server TLS keys
+  copy:
+    src: "{{ item }}"
+    dest: "{{ nomad.remote.tls_dir }}/"
+    owner: nomad
+    group: nomad
+    mode: 0600
+  with_fileglob:
+    - "{{ nomad.local.client.tls.keys_dir }}/*"
+
+- name: Copy nomad CA key
+  copy:
+    src: "{{ nomad.local.server.tls.ca_dir }}/nomad-ca.pem"
+    dest: "{{ nomad.remote.tls_dir }}/"
+    owner: nomad
+    group: nomad
+    mode: 0600
+
+- name: Copy client config
+  template:
+    src: client.hcl
+    dest: "{{ nomad.remote.client.root_dir }}/config.hcl"
+    owner: nomad
+    group: nomad
+    mode: 0600
+
+- name: Copy nomad client env
+  template:
+    src: client.env
+    dest: "{{ nomad.remote.client.root_dir }}/client.env"
+    owner: nomad
+    group: nomad
+    mode: 0600
+
+- name: Copy nomad-client systemd service
+  template:
+    src: nomad-client.service
+    dest: /etc/systemd/system/nomad-client.service
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Start nomad client systemd service
+  systemd:
+    name: nomad-client
+    state: restarted
+    enabled: true
+    daemon_reload: yes

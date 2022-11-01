@@ -1,3 +1,8 @@
 node_modules
 id_rsa*
 .vagrant
+ansible/keys/nomad/*.key
+ansible/keys/consul/*.key
+ansible/keys/nomad/tls/ca/*[.pem, .csr]
+ansible/keys/nomad/tls/*/*[.pem, .csr]
+ansible/keys/consul/tls/*/*.pem

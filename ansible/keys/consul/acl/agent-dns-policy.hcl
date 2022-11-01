@@ -1,0 +1,3 @@
+service "dns" {
+  policy = "write"
+}

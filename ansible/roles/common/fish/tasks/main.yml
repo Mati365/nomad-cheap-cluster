@@ -8,3 +8,8 @@
   loop: "{{ all_users }}"
   loop_control:
     loop_var: user
+
+- name: Ensure CI user is not using fish shell
+  user:
+    name: ci
+    shell: /bin/bash

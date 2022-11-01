@@ -1,0 +1,24 @@
+[Unit]
+Description=Nomad client
+Documentation=https://www.nomadproject.io/docs/
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=root
+Group=root
+EnvironmentFile=-{{ nomad.remote.client.root_dir }}/client.env
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/bin/nomad agent -config {{ nomad.remote.client.root_dir }}/config.hcl
+KillMode=process
+KillSignal=SIGINT
+LimitNOFILE=65536
+LimitNPROC=infinity
+Restart=on-failure
+RestartSec=2
+
+TasksMax=infinity
+OOMScoreAdjust=-1000
+
+[Install]
+WantedBy=multi-user.target

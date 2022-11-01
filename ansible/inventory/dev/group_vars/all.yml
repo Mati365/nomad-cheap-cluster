@@ -3,3 +3,11 @@ ip:
   advert: "{{ ansible_eth1.ipv4.address }}"
   interface:
     default: "eth1"
+
+addresses:
+  consul:
+    ip: 192.168.56.10
+    port: 8500
+    stats_port: 3000
+
+  server: 192.168.56.10

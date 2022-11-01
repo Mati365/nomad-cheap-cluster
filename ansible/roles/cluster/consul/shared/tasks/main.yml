@@ -1,0 +1,63 @@
+- name: Install consul package
+  package:
+    name: consul
+    state: present
+
+- name: Ensure consul group present
+  group:
+    name: consul
+    state: present
+
+- name: Ensure consul user present
+  user:
+    name: consul
+    groups: consul
+    shell: /bin/bash
+    append: yes
+
+- name: Ensure consul dir present
+  file:
+    path: "{{ consul.remote.root_dir }}"
+    state: directory
+    owner: consul
+    group: consul
+    mode: 0755
+
+- name: Copy consul CA key
+  copy:
+    src: "{{ consul.local.server.tls.ca_dir }}/consul-agent-ca.pem"
+    dest: "{{ consul.remote.tls_dir }}/"
+    owner: consul
+    group: consul
+    mode: 0600
+
+- name: Copy consul node TLS keys
+  copy:
+    src: "{{ item }}"
+    dest: "{{ consul.remote.tls_dir }}/"
+    owner: consul
+    group: consul
+    mode: 0600
+  with_fileglob:
+    - "{{ consul.local.client.tls.keys_dir }}/*"
+
+- name: Ensure resolved.conf.d directory exists
+  file:
+    path: /etc/systemd/resolved.conf.d/
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy consul resolved config
+  copy:
+    src: consul-resolved.conf
+    dest: /etc/systemd/resolved.conf.d/consul.conf
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Restarted resolved service
+  service:
+    name: systemd-resolved
+    state: restarted

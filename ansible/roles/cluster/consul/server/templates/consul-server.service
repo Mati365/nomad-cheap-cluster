@@ -1,0 +1,21 @@
+[Unit]
+Description="Consul server service"
+Requires=network-online.target
+After=network-online.target
+ConditionFileNotEmpty={{ consul.remote.server.root_dir }}/server.hcl
+StartLimitBurst=1
+StartLimitIntervalSec=150s
+
+[Service]
+EnvironmentFile=-{{ consul.remote.server.root_dir }}/server.env
+User=consul
+Group=consul
+ExecStart=/usr/bin/consul agent -config-file={{ consul.remote.server.root_dir }}/server.hcl
+ExecReload=/bin/kill --signal HUP $MAINPID
+KillMode=process
+KillSignal=SIGTERM
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

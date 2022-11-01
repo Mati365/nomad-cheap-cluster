@@ -1,0 +1,121 @@
+- name: Create consul server data dir
+  file:
+    path: "{{ consul.remote.server.root_dir }}/data"
+    state: directory
+    owner: consul
+    group: consul
+    mode: 0755
+
+- name: Copy consul server config
+  template:
+    src: server.hcl
+    dest: "{{ consul.remote.server.root_dir }}/server.hcl"
+    owner: consul
+    group: consul
+    mode: 0600
+
+- name: Copy consul server TLS keys
+  copy:
+    src: "{{ item }}"
+    dest: "{{ consul.remote.tls_dir }}/"
+    owner: consul
+    group: consul
+    mode: 0600
+  with_fileglob:
+    - "{{ consul.local.server.tls.keys_dir }}/*"
+
+- name: Copy consul CA key
+  copy:
+    src: "{{ consul.local.server.tls.ca_dir }}/consul-agent-ca.pem"
+    dest: "{{ consul.remote.tls_dir }}/"
+    owner: consul
+    group: consul
+    mode: 0600
+
+- name: Copy consul systemd service
+  template:
+    src: consul-server.service
+    dest: /etc/systemd/system/consul-server.service
+    owner: root
+    group: root
+    mode: 0755
+
+# # Copy new bootstrap key
+- name: Start consul systemd service
+  systemd:
+    name: consul-server
+    state: restarted
+    enabled: true
+    daemon_reload: yes
+
+- name: Bootstrap consul acl
+  become_user: consul
+  args:
+    executable: /bin/bash
+  shell: |
+    # Reset previous key
+    bootstrap_index=$(jq -r '.CreateIndex' {{ consul.remote.root_dir }}/bootstrap.json 2>/dev/null)
+    if [[ ! -z "$bootstrap_index" ]]; then
+      echo "$bootstrap_index" > {{ consul.remote.server.root_dir }}/data/acl-bootstrap-reset
+    fi
+
+    # Create tokens dir
+    mkdir {{ consul.remote.tokens_dir }}
+    chmod 0700 {{ consul.remote.tokens_dir }}
+
+    # Generate new bootstrap key
+    rm {{ consul.remote.server.root_dir }}/bootstrap.json
+    for i in {1..15}; do
+      bootstrap_result=$(consul acl bootstrap -format=json 2>/dev/null)
+      if [[ ! -z "$bootstrap_result" ]]; then
+        echo "$bootstrap_result" > {{ consul.remote.server.root_dir }}/bootstrap.json
+        chmod 0600 {{ consul.remote.server.root_dir }}/bootstrap.json
+
+        echo "$(jq -r '.SecretID' {{ consul.remote.server.root_dir }}/bootstrap.json)" > {{ consul.remote.tokens_dir }}/bootstrap.key
+        chmod 0600 {{ consul.remote.tokens_dir }}/bootstrap.key
+
+        break
+      fi
+
+      sleep 1
+    done
+
+# ACLs
+- name: Ensure acl dir exists
+  file:
+    path: "{{ consul.remote.acl_dir }}/"
+    state: directory
+    owner: consul
+    group: consul
+    mode: 0700
+
+- name: Find ACLs
+  become: false
+  delegate_to: localhost
+  find:
+    paths: "{{ consul.local.acl_dir }}/"
+    patterns: '*.hcl'
+    file_type: file
+  register : acl_keys_paths
+
+- name: Install ACL files
+  include_tasks: ./install-acl-file.yml
+  loop: "{{ acl_keys_paths.files }}"
+  loop_control:
+    loop_var: file
+
+# Restart server after ACL loaded
+- name: Copy consul server variables
+  template:
+    src: server.env
+    dest: "{{ consul.remote.root_dir }}/server.env"
+    owner: consul
+    group: consul
+    mode: 0600
+
+- name: Restart consul systemd service
+  systemd:
+    name: consul-server
+    state: restarted
+    enabled: true
+    daemon_reload: yes

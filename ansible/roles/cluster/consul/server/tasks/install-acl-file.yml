@@ -1,0 +1,44 @@
+- name: Copy consul ACL file
+  copy:
+    src: "{{ file.path }}"
+    dest: "{{ consul.remote.acl_dir }}/"
+    owner: consul
+    group: consul
+    mode: 0600
+
+- name: Set policy name
+  set_fact:
+    policy_name: "{{ file.path | basename | splitext | first }}"
+
+- name: Activate consul ACL file
+  become_user: consul
+  shell: |
+    consul acl policy delete \
+      -name {{ policy_name }} \
+      -token-file "{{ consul.remote.tokens_dir }}/bootstrap.key" 2>&1
+
+    consul acl policy create \
+      -name {{ policy_name }} \
+      -rules @{{ consul.remote.acl_dir }}/{{ file.path | basename }} \
+      -token-file "{{ consul.remote.tokens_dir }}/bootstrap.key" \
+      -format=json > "{{ consul.remote.acl_dir }}/{{ policy_name }}.json"
+
+    consul acl token create \
+      -policy-name {{ policy_name }} \
+      -token-file "{{ consul.remote.tokens_dir }}/bootstrap.key" \
+      --format=json > {{ consul.remote.tokens_dir }}/{{ policy_name }}.json
+
+    echo "$(jq -r '.SecretID' {{ consul.remote.tokens_dir }}/{{ policy_name }}.json)" > {{ consul.remote.tokens_dir }}/{{ policy_name }}.key
+    chmod 0600 {{ consul.remote.acl_dir }}/{{ policy_name }}.json
+    chmod 0600 {{ consul.remote.tokens_dir }}/*
+
+- name: Read policy ACL
+  register: acl_policy
+  command: cat "{{ consul.remote.tokens_dir }}/{{ policy_name }}.key"
+
+- name: Set policy fact
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  with_items: "{{ groups['cluster'] }}"
+  set_fact:
+    "{{ policy_name | replace('-', '_') }}_key": "{{ acl_policy.stdout }}"

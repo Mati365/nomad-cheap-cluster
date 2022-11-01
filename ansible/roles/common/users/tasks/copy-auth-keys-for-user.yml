@@ -8,7 +8,7 @@
   become: false
   delegate_to: localhost
   find:
-    paths: "{{ local_paths.all_keys }}/envs/{{ env }}/{{ user.name }}/"
+    paths: "{{ local_paths.all_keys }}/auth/{{ server }}/{{ env }}/{{ user.name }}/"
     patterns: '*.pub'
     file_type: file
   register : user_keys_paths

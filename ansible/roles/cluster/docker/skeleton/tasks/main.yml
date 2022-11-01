@@ -1,0 +1,7 @@
+- name: Ensure volumes dir is present
+  file:
+    path: "{{ docker.volumes_path }}"
+    state: directory
+    owner: deploy
+    group: webusers
+    mode:  '0770'

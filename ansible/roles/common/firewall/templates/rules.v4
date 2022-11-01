@@ -8,6 +8,15 @@
 -A INPUT -i lo -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 -A OUTPUT -p tcp -m tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+# Nomad
+-A INPUT -p tcp --match multiport --dports 4648,4647,4646 -j ACCEPT
+-A INPUT -p udp --match multiport --dports 4648 -j ACCEPT
+
+# Consul
+-A INPUT -p tcp --match multiport --dports 8600,8500,8301,8302,8300,3000 -j ACCEPT
+-A INPUT -p udp --match multiport --dports 8600,8301,8302 -j ACCEPT
+
 -A FORWARD -j ACCEPT
 -I DOCKER-USER -i {{ ip.interface.default }} -p tcp --dport 5000:32767 -j DROP
 -A DOCKER-USER -j RETURN

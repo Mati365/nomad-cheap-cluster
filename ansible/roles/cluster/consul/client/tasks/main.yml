@@ -1,0 +1,60 @@
+- name: Set consul client ID
+  set_fact:
+    node_id: "{{ groups['all'].index(inventory_hostname) }}"
+
+- name: Create nomad node consul dir
+  file:
+    path: "{{ consul.remote.client.root_dir }}/data"
+    state: directory
+    owner: consul
+    group: consul
+    mode: 0755
+
+- name: Copy consul node variables
+  template:
+    src: node.env
+    dest: "{{ consul.remote.client.root_dir }}/node.env"
+    owner: consul
+    group: consul
+    mode: 0600
+
+- name: Copy consul node config
+  template:
+    src: node.hcl
+    dest: "{{ consul.remote.client.root_dir }}/node.hcl"
+    owner: consul
+    group: consul
+    mode: 0600
+
+- name: Copy consul server TLS keys
+  copy:
+    src: "{{ item }}"
+    dest: "{{ consul.remote.tls_dir }}/"
+    owner: consul
+    group: consul
+    mode: 0600
+  with_fileglob:
+    - "{{ consul.local.client.tls.keys_dir }}/*"
+
+- name: Copy consul CA key
+  copy:
+    src: "{{ consul.local.server.tls.ca_dir }}/consul-agent-ca.pem"
+    dest: "{{ consul.remote.tls_dir }}/"
+    owner: consul
+    group: consul
+    mode: 0600
+
+- name: Copy consul node systemd service
+  template:
+    src: consul-node.service
+    dest: /etc/systemd/system/consul-node.service
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Start nomad consul node systemd service
+  systemd:
+    name: consul-node
+    state: restarted
+    enabled: true
+    daemon_reload: yes

@@ -1,0 +1,92 @@
+- name: Copy nomad-server systemd service
+  template:
+    src: nomad-server.service
+    dest: /etc/systemd/system/nomad-server.service
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create nomad server data dir
+  file:
+    path: "{{ nomad.remote.server.root_dir }}/data"
+    state: directory
+    owner: nomad
+    group: nomad
+    mode: 0755
+
+- name: Copy nomad server TLS keys
+  copy:
+    src: "{{ item }}"
+    dest: "{{ nomad.remote.tls_dir }}/"
+    owner: nomad
+    group: nomad
+    mode: 0600
+  with_fileglob:
+    - "{{ nomad.local.server.tls.keys_dir }}/*"
+
+- name: Copy nomad CA key
+  copy:
+    src: "{{ nomad.local.server.tls.ca_dir }}/nomad-ca.pem"
+    dest: "{{ nomad.remote.tls_dir }}/"
+    owner: nomad
+    group: nomad
+    mode: 0600
+
+- name: Copy nomad token file
+  copy:
+    dest: "{{ nomad.remote.server.root_dir }}/token.key"
+    content: "{{ nomad.local.server.token }}"
+    owner: nomad
+    group: nomad
+    mode: 0600
+
+- name: Copy server config
+  template:
+    src: server.hcl
+    dest: "{{ nomad.remote.server.root_dir }}/config.hcl"
+    owner: nomad
+    group: nomad
+    mode: 0600
+
+- name: Copy nomad server env
+  template:
+    src: server.env
+    dest: "{{ nomad.remote.server.root_dir }}/server.env"
+    owner: nomad
+    group: nomad
+    mode: 0600
+
+- name: Start nomad-server systemd service
+  systemd:
+    name: nomad-server
+    state: restarted
+    enabled: true
+    daemon_reload: yes
+
+- name: Bootstrap server acl
+  become_user: nomad
+  args:
+    executable: /bin/bash
+  shell: |
+    # Reset previous key
+    bootstrap_index=$(jq -r '.CreateIndex' {{ nomad.remote.server.root_dir }}/bootstrap.json 2>/dev/null)
+    if [[ ! -z "$bootstrap_index" ]]; then
+      echo "$bootstrap_index" > {{ nomad.remote.server.root_dir }}/data/server/acl-bootstrap-reset
+    fi
+
+    # Create new bootstrap file
+    rm {{ nomad.remote.server.root_dir }}/bootstrap.json
+    bootstrap_result=$(
+      nomad acl bootstrap \
+        -json \
+        -address=https://localhost:4646 \
+        -ca-path={{ nomad.remote.tls_dir }}/nomad-ca.pem \
+        -client-cert={{ nomad.remote.tls_dir }}/server.pem \
+        -client-key={{ nomad.remote.tls_dir }}/server-key.pem \
+        {{ nomad.remote.server.root_dir }}/token.key 2>&1 | tee {{ nomad.remote.server.root_dir }}/bootstrap.json
+    )
+
+    if [[ ! -z "$bootstrap_result" ]]; then
+      echo "$bootstrap_result" > {{ nomad.remote.server.root_dir }}/bootstrap.json
+      chmod 0600 {{ nomad.remote.server.root_dir }}/bootstrap.json
+    fi

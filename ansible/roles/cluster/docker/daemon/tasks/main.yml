@@ -9,12 +9,11 @@
     state: present
 
 - name: Update apt and install docker-ce
-  apt:
+  package:
     name:
       - docker-ce
       - docker-compose-plugin
-    state: latest
-    update_cache: true
+    state: present
 
 - name: Install docker pip module
   pip:

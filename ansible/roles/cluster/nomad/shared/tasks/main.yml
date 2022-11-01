@@ -1,0 +1,38 @@
+- name: Add nomad GPG keys
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    state: present
+
+- name: Add nomad repo
+  apt_repository:
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+    state: present
+
+- name: Update repos
+  apt:
+    update_cache: yes
+
+- name: Install nomad
+  package:
+    name: nomad
+    state: present
+
+- name: Ensure nomad group present
+  group:
+    name: nomad
+    state: present
+
+- name: Ensure nomad user present
+  user:
+    name: nomad
+    groups: nomad
+    shell: /bin/bash
+    append: yes
+
+- name: Nomad dir is present
+  file:
+    path: "{{ nomad.remote.root_dir }}"
+    state: directory
+    owner: nomad
+    group: nomad
+    mode: 0755
