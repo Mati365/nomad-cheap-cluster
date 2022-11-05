@@ -1,0 +1,14 @@
+- hosts: web
+  gather_facts: true
+  become: true
+  roles:
+    - role: common/firewall
+
+- hosts: cluster
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Always restart docker server
+      service:
+        name: docker
+        state: restarted

@@ -12,7 +12,7 @@
   apt:
     update_cache: yes
 
-- name: Install nomad
+- name: Install nomad and utils
   package:
     name: nomad
     state: present

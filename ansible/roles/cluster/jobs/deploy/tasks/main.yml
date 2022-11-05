@@ -1,0 +1,15 @@
+- name: Ensure jobs dir present
+  file:
+    path: "{{ nomad.remote.jobs.root_dir }}"
+    state: directory
+    owner: nomad
+    group: nomad
+    mode: 0755
+
+- name: Deploy jobs
+  include_tasks: deploy-job.yml
+  vars:
+    job_file_path: "{{ item }}"
+    job_name: "{{ item | basename | split('.') | first}}"
+  with_fileglob:
+    - "../template/jobs/*.hcl"

@@ -37,6 +37,6 @@ tls {
   cert_file = "{{ nomad.remote.tls_dir }}/server.pem"
   key_file  = "{{ nomad.remote.tls_dir }}/server-key.pem"
 
-  verify_server_hostname = true
-  verify_https_client    = true
+  verify_server_hostname = {{ (env != 'dev') | to_json }}
+  verify_https_client    = {{ (env != 'dev') | to_json }}
 }

@@ -1,0 +1,16 @@
+- name: Install CNI utils
+  package:
+    name: containernetworking-plugins
+    state: present
+
+- name: Ensure CNI dir is present
+  file:
+    path: /opt/cni
+    state: directory
+    mode: 0755
+
+- name: Symlink CNI folder
+  file:
+    src: /usr/lib/cni
+    dest: /opt/cni/bin
+    state: link

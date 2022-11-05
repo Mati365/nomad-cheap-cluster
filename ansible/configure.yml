@@ -29,6 +29,7 @@
   gather_facts: true
   become: true
   roles:
+    - role: cluster/cni
     - role: cluster/docker/daemon
     - role: cluster/docker/skeleton
     - role: cluster/nomad/shared
@@ -49,3 +50,12 @@
   roles:
     - role: cluster/consul/client
     - role: cluster/nomad/client
+
+- hosts: server
+  tags:
+    - cluster
+    - deploy
+  gather_facts: true
+  become: true
+  roles:
+    - role: cluster/jobs/deploy

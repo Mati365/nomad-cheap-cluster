@@ -1,7 +1,7 @@
 {
   "signing": {
     "default": {
-      "expiry": "24h",
+      "expiry": "143800h",
       "usages": ["signing", "key encipherment", "server auth", "client auth"]
     }
   }
