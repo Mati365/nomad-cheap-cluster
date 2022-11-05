@@ -36,6 +36,18 @@ sudo nomad node status \
   -token=$(sudo jq -r '.SecretID' /var/www/nomad/server/bootstrap.json)
 ```
 
+Purge job:
+
+```bash
+sudo nomad job stop -purge \
+  -address=https://localhost:4646 \
+  -ca-path=/var/www/nomad/tls/nomad-ca.pem \
+  -client-cert=/var/www/nomad/tls/server.pem \
+  -client-key=/var/www/nomad/tls/server-key.pem \
+  -token=$(sudo jq -r '.SecretID' /var/www/nomad/server/bootstrap.json) \
+  <job name>
+```
+
 ### Consul
 
 ```bash

@@ -4,6 +4,10 @@ bind_addr = "0.0.0.0"
 
 client {
   enabled = true
+
+  template {
+    disable_file_sandbox = true
+  }
 }
 
 advertise {

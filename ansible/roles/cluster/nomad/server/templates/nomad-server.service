@@ -5,8 +5,8 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-User=nomad
-Group=nomad
+User=root
+Group=root
 EnvironmentFile=-{{ nomad.remote.server.root_dir }}/server.env
 ExecReload=/bin/kill -HUP $MAINPID
 ExecStart=/usr/bin/nomad agent -config {{ nomad.remote.server.root_dir }}/config.hcl

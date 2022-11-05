@@ -12,4 +12,5 @@
     job_dir: "{{ item }}"
     job_name: "{{ item | split('/') | last }}"
   with_items:
-    - "jobs/hello-world"
+    - "jobs/http-server"
+    - "jobs/reverse-proxy"

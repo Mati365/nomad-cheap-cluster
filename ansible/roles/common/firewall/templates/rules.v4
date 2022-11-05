@@ -10,7 +10,7 @@
 -A OUTPUT -p tcp -m tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
 # Shared
--A INPUT -p tcp --match multiport --dports 80,443 -j ACCEPT
+-A INPUT -p tcp --match multiport --dports 80,443,8081 -j ACCEPT
 
 # Nomad
 -A INPUT -p tcp --match multiport --dports 4648,4647,4646 -j ACCEPT

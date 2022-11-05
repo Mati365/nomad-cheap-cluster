@@ -1,27 +1,32 @@
-- name: Sync {{ job_name }} job configs
-  synchronize:
-    src: "../templates/{{ job_dir }}"
-    dest: "{{ nomad.remote.jobs.root_dir }}/"
-    rsync_opts:
-      - "--exclude=job.hcl"
-      - "--chmod=F600"
-      - "--chown=nomad:nomad"
+- name: Read consul token
+  slurp:
+    src: "{{ nomad.remote.server.root_dir + '/server.env' }}"
+  register: server_env
+
+- name: Set vars
+  set_fact:
+    remote_job_dir: "{{ nomad.remote.jobs.root_dir }}/{{ job_name }}"
+    consul_token: "{{ server_env.content | b64decode | regex_search('CONSUL_HTTP_TOKEN=(.+)[$\n]', '\\1') | first }}"
 
 - name: Ensure directory has proper chmod
   file:
-    path: "{{ nomad.remote.jobs.root_dir }}/{{ job_name }}"
+    path: "{{ remote_job_dir }}"
     state: directory
     owner: nomad
     group: nomad
     mode: 0700
 
-- name: Sync job file
+- name: Sync all templates
   template:
-    src: "{{ job_dir }}/job.hcl"
-    dest: "{{ nomad.remote.jobs.root_dir }}/{{ job_name }}/job.hcl"
+    src: "{{ file }}"
+    dest: "{{ remote_job_dir }}/"
     owner: nomad
     group: nomad
     mode: 0600
+  loop_control:
+    loop_var: file
+  with_fileglob:
+    - "../templates/{{ job_dir }}/*"
 
 - name: Apply {{ job_name }} to cluster
   become_user: nomad

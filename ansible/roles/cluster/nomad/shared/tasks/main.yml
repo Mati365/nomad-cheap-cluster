@@ -22,6 +22,12 @@
     name: nomad
     state: present
 
+- name: Ensure nomad has docker group
+  user:
+    name: nomad
+    groups: docker
+    append: yes
+
 - name: Ensure nomad user present
   user:
     name: nomad
