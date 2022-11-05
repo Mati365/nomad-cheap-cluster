@@ -31,7 +31,7 @@ job "docs" {
           "-listen",
           ":5678",
           "-text",
-          "hello world 2",
+          "hello world 3",
         ]
       }
     }

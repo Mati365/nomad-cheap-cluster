@@ -9,7 +9,7 @@
 - name: Deploy jobs
   include_tasks: deploy-job.yml
   vars:
-    job_file_path: "{{ item }}"
-    job_name: "{{ item | basename | split('.') | first}}"
-  with_fileglob:
-    - "../template/jobs/*.hcl"
+    job_dir: "{{ item }}"
+    job_name: "{{ item | split('/') | last }}"
+  with_items:
+    - "jobs/hello-world"

@@ -1,14 +1,23 @@
-- name: Ensure {{ job_name }} job folder exists
+- name: Sync {{ job_name }} job configs
+  synchronize:
+    src: "../templates/{{ job_dir }}"
+    dest: "{{ nomad.remote.jobs.root_dir }}/"
+    rsync_opts:
+      - "--exclude=job.hcl"
+      - "--chmod=F600"
+      - "--chown=nomad:nomad"
+
+- name: Ensure directory has proper chmod
   file:
     path: "{{ nomad.remote.jobs.root_dir }}/{{ job_name }}"
     state: directory
     owner: nomad
     group: nomad
-    mode: 0755
+    mode: 0700
 
-- name: Copy {{ job_name }} job
+- name: Sync job file
   template:
-    src: "{{ job_file_path }}"
+    src: "{{ job_dir }}/job.hcl"
     dest: "{{ nomad.remote.jobs.root_dir }}/{{ job_name }}/job.hcl"
     owner: nomad
     group: nomad
