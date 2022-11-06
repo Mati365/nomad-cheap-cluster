@@ -1,3 +1,32 @@
+- name: Install bind package
+  package:
+    name: bind9
+    state: present
+
+- name: Stop systemd-resolved
+  systemd:
+    state: stopped
+    name: systemd-resolved
+    enabled: false
+    daemon_reload: true
+
+- name: Copy named.conf
+  copy:
+    src: named.conf
+    dest: /etc/bind/named.conf.options
+
+- name: Ensure named dir exists
+  file:
+    path: /etc/bind/custom
+    state: directory
+
+- name: Start bind
+  systemd:
+    state: restarted
+    name: named
+    enabled: true
+    daemon_reload: yes
+
 - name: Ensure resolv.conf is mutable
   when: immutable_resolve is defined
   file:

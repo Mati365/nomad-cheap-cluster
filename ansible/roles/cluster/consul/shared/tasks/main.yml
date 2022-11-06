@@ -49,15 +49,26 @@
     group: root
     mode: 0755
 
-- name: Copy consul resolved config
-  copy:
-    src: consul-resolved.conf
-    dest: /etc/systemd/resolved.conf.d/consul.conf
+- name: Copy consul named config
+  template:
+    src: consul.conf
+    dest: /etc/bind/custom/consul.conf
     owner: root
     group: root
-    mode: 0755
+    mode: 0644
 
-- name: Restarted resolved service
+- name: Test for bind9 config
+  shell: grep -c "consul.conf" /etc/bind/named.conf.options || true
+  register: test_bind9_conf
+
+- name: Append include to bind9
+  when: test_bind9_conf.stdout == "0"
+  lineinfile:
+    dest: /etc/bind/named.conf.options
+    line: 'include "/etc/bind/custom/consul.conf";'
+
+- name: Restarted named DNS service
   service:
-    name: systemd-resolved
+    name: named
     state: restarted
+    daemon_reload: yes

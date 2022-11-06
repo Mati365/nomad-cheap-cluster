@@ -64,7 +64,6 @@
     daemon_reload: yes
 
 - name: Bootstrap server acl
-  become_user: nomad
   args:
     executable: /bin/bash
   shell: |
@@ -83,10 +82,11 @@
         -ca-path={{ nomad.remote.tls_dir }}/nomad-ca.pem \
         -client-cert={{ nomad.remote.tls_dir }}/server.pem \
         -client-key={{ nomad.remote.tls_dir }}/server-key.pem \
-        {{ nomad.remote.server.root_dir }}/token.key 2>&1 | tee {{ nomad.remote.server.root_dir }}/bootstrap.json
+        {{ nomad.remote.server.root_dir }}/token.key 2>/dev/null
     )
 
     if [[ ! -z "$bootstrap_result" ]]; then
       echo "$bootstrap_result" > {{ nomad.remote.server.root_dir }}/bootstrap.json
+      chown nomad:nomad {{ nomad.remote.server.root_dir }}/bootstrap.json
       chmod 0600 {{ nomad.remote.server.root_dir }}/bootstrap.json
     fi

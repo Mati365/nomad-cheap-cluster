@@ -1,3 +1,15 @@
+- name: Disable consul server services if enabled
+  shell: if systemctl is-enabled --quiet {{ item }}; then systemctl disable --now {{ item }} && echo disable_ok ; fi
+  register: output
+  changed_when: "'disable_ok' in output.stdout"
+  loop:
+    - consul-server
+
+- name: Nuke consul server data
+  file:
+    path: "{{ consul.remote.server.root_dir }}/data"
+    state: absent
+
 - name: Create consul server data dir
   file:
     path: "{{ consul.remote.server.root_dir }}/data"
@@ -54,7 +66,7 @@
     executable: /bin/bash
   shell: |
     # Reset previous key
-    bootstrap_index=$(jq -r '.CreateIndex' {{ consul.remote.root_dir }}/bootstrap.json 2>/dev/null)
+    bootstrap_index=$(jq -r '.CreateIndex' {{ consul.remote.server.root_dir }}/bootstrap.json 2>/dev/null)
     if [[ ! -z "$bootstrap_index" ]]; then
       echo "$bootstrap_index" > {{ consul.remote.server.root_dir }}/data/acl-bootstrap-reset
     fi
@@ -104,11 +116,20 @@
   loop_control:
     loop_var: file
 
+- name: Set default anonymous token
+  become_user: consul
+  shell: |
+    consul acl token update \
+      -id 00000000-0000-0000-0000-000000000002 \
+      -token-file "{{ consul.remote.tokens_dir }}/bootstrap.key" \
+      -policy-name "anonymous-policy" \
+      -description "Anonymous Token - Can list nodes and services"
+
 # Restart server after ACL loaded
 - name: Copy consul server variables
   template:
     src: server.env
-    dest: "{{ consul.remote.root_dir }}/server.env"
+    dest: "{{ consul.remote.server.root_dir }}/server.env"
     owner: consul
     group: consul
     mode: 0600

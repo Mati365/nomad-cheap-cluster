@@ -1,3 +1,5 @@
+acl = "write"
+
 agent_prefix "" {
   policy = "read"
 }
@@ -9,5 +11,3 @@ node_prefix "" {
 service_prefix "" {
   policy = "write"
 }
-
-acl = "write"

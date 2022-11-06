@@ -1,0 +1,39 @@
+- hosts: cluster
+  tags: cluster
+  gather_facts: true
+  become: true
+  roles:
+    - role: cluster/nomad/shared
+    - role: cluster/consul/shared
+
+- hosts: server
+  tags: cluster
+  gather_facts: true
+  become: true
+  roles:
+    - role: cluster/consul/server
+    - role: cluster/nomad/server
+
+- hosts: client
+  tags: cluster
+  gather_facts: true
+  become: true
+  roles:
+    - role: cluster/consul/client
+    - role: cluster/nomad/client
+
+- hosts: cluster
+  become: true
+  tasks:
+    - name: Wait for all nodes to be ready...
+      pause:
+        seconds: 15
+
+- hosts: server
+  tags:
+    - cluster
+    - deploy
+  gather_facts: true
+  become: true
+  roles:
+    - role: cluster/jobs/deploy

@@ -1,3 +1,0 @@
-service "dns" {
-  policy = "write"
-}

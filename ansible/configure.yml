@@ -14,8 +14,8 @@
     apt:
       install_recommends: no
   roles:
-    - role: common/firewall
     - role: common/dns
+    - role: common/firewall
     - role: common/utils
     - role: common/sshd
     - role: common/users
@@ -32,30 +32,5 @@
     - role: cluster/cni
     - role: cluster/docker/daemon
     - role: cluster/docker/skeleton
-    - role: cluster/nomad/shared
-    - role: cluster/consul/shared
 
-- hosts: server
-  tags: cluster
-  gather_facts: true
-  become: true
-  roles:
-    - role: cluster/consul/server
-    - role: cluster/nomad/server
-
-- hosts: client
-  tags: cluster
-  gather_facts: true
-  become: true
-  roles:
-    - role: cluster/consul/client
-    - role: cluster/nomad/client
-
-- hosts: server
-  tags:
-    - cluster
-    - deploy
-  gather_facts: true
-  become: true
-  roles:
-    - role: cluster/jobs/deploy
+- import_playbook: ./sync-cluster.yml

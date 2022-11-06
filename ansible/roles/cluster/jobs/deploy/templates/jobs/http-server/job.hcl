@@ -2,16 +2,7 @@ job "http-server" {
   datacenters = ["dc1"]
 
   group "http-server" {
-    count = 4
-
-    update {
-      max_parallel     = 1
-      canary           = 1
-      min_healthy_time = "15s"
-      healthy_deadline = "5m"
-      auto_revert      = true
-      auto_promote     = true
-    }
+    count = 3
 
     network {
       port "http" {
@@ -25,7 +16,7 @@ job "http-server" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.example.rule=Host(`example.app`)",
+        "traefik.http.routers.example.rule=Host(`example.pl`)",
       ]
 
       check {

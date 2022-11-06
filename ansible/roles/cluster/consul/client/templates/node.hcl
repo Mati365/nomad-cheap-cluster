@@ -14,7 +14,7 @@ tls {
     ca_file = "{{ consul.remote.tls_dir }}/consul-agent-ca.pem"
     cert_file = "{{ consul.remote.tls_dir }}/dc1-client-consul-0.pem"
     key_file = "{{ consul.remote.tls_dir }}/dc1-client-consul-0-key.pem"
-    verify_incoming = false
+    verify_incoming = true
     verify_outgoing = true
   }
 
@@ -23,27 +23,15 @@ tls {
   }
 }
 
-service {
-  id      = "dns"
-  name    = "dns"
-  tags    = ["primary"]
-  address = "localhost"
-  port    = 8600
-  token   = "{{ agent_dns_policy_key }}"
-  check {
-    id       = "dns"
-    name     = "Consul DNS TCP on port 8600"
-    tcp      = "localhost:8600"
-    interval = "10s"
-    timeout  = "1s"
-  }
-}
-
 acl {
-  enabled        = true
+  enabled = true
   enable_token_persistence = true
   default_policy = "deny"
   tokens {
     agent = "{{ agent_policy_key }}"
   }
+}
+
+auto_encrypt = {
+  tls = true
 }

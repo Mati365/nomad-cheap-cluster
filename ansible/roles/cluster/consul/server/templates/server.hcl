@@ -40,7 +40,7 @@ telemetry {
 }
 
 acl {
-  enabled        = true
+  enabled = true
   enable_token_persistence = true
   default_policy = "deny"
 }
