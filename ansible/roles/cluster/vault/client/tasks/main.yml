@@ -1,0 +1,17 @@
+- name: Copy vault client TLS keys
+  copy:
+    src: "{{ item }}"
+    dest: "{{ vault.remote.tls_dir }}/"
+    owner: vault
+    group: vault
+    mode: 0600
+  with_fileglob:
+    - "{{ vault.local.client.tls.keys_dir }}/*"
+
+- name: Copy vault CA key
+  copy:
+    src: "{{ vault.local.server.tls.ca_dir }}/vault-ca.pem"
+    dest: "{{ vault.remote.tls_dir }}/"
+    owner: vault
+    group: vault
+    mode: 0600

@@ -63,6 +63,10 @@
     enabled: true
     daemon_reload: yes
 
+- name: Wait for server to be ready...
+  pause:
+    seconds: 7
+
 - name: Bootstrap server acl
   args:
     executable: /bin/bash
@@ -74,7 +78,7 @@
     fi
 
     # Create new bootstrap file
-    rm {{ nomad.remote.server.root_dir }}/bootstrap.json
+    [ -e {{ nomad.remote.server.root_dir }}/bootstrap.json ] && rm {{ nomad.remote.server.root_dir }}/bootstrap.json
     bootstrap_result=$(
       nomad acl bootstrap \
         -json \

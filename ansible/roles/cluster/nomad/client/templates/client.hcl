@@ -39,3 +39,11 @@ tls {
   verify_server_hostname = true
   verify_https_client    = true
 }
+
+vault {
+  enabled     = true
+  address     = "https://vault.service.consul:8200"
+  ca_file     = "{{ vault.remote.tls_dir }}/vault-ca.pem"
+  cert_file   = "{{ vault.remote.tls_dir }}/client.pem"
+  key_file    = "{{ vault.remote.tls_dir }}/client-key.pem"
+}

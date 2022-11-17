@@ -29,6 +29,15 @@ consul {
   client_auto_join    = true
 }
 
+vault {
+  enabled     = true
+  ca_file     = "{{ vault.remote.tls_dir }}/vault-ca.pem"
+  cert_file   = "{{ vault.remote.tls_dir }}/server.pem"
+  key_file    = "{{ vault.remote.tls_dir }}/server-key.pem"
+  address     = "https://vault.service.consul:8200"
+  token       = "{{ vault_root_token }}"
+}
+
 acl {
   enabled = true
 }

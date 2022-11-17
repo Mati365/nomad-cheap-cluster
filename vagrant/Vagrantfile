@@ -13,8 +13,7 @@ defaults = {
 
 machines = [
   { name: 'node-1', ip: "#{defaults[:net]}.10" },
-  { name: 'node-2', ip: "#{defaults[:net]}.11" },
-  { name: 'node-3', ip: "#{defaults[:net]}.12" }
+  { name: 'node-2', ip: "#{defaults[:net]}.11" }
 ]
 
 bootstrap_script = <<-SHELL

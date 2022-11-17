@@ -4,7 +4,13 @@
   become: true
   roles:
     - role: cluster/nomad/shared
+      tags: nomad
+
     - role: cluster/consul/shared
+      tags: consul
+
+    - role: cluster/vault/shared
+      tags: vault
 
 - hosts: server
   tags: cluster
@@ -12,7 +18,13 @@
   become: true
   roles:
     - role: cluster/consul/server
+      tags: consul
+
+    - role: cluster/vault/server
+      tags: vault
+
     - role: cluster/nomad/server
+      tags: nomad
 
 - hosts: client
   tags: cluster
@@ -20,7 +32,13 @@
   become: true
   roles:
     - role: cluster/consul/client
+      tags: consul
+
+    - role: cluster/vault/client
+      tags: vault
+
     - role: cluster/nomad/client
+      tags: nomad
 
 - hosts: cluster
   become: true

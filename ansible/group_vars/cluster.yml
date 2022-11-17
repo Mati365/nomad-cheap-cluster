@@ -71,3 +71,24 @@ nomad:
 
     client:
       root_dir: "{{ remote_paths.www }}/nomad/client"
+
+vault:
+  local:
+    server:
+      tls:
+        ca_dir: "{{ local_paths.all_keys }}/vault/tls/ca"
+        keys_dir: "{{ local_paths.all_keys }}/vault/tls/server"
+    client:
+      tls:
+        keys_dir: "{{ local_paths.all_keys }}/vault/tls/client"
+
+  remote:
+    root_dir: "{{ remote_paths.www }}/vault"
+    tls_dir: "{{ remote_paths.www }}/vault/tls"
+
+    server:
+      root_dir: "{{ remote_paths.www }}/vault/server"
+      tokens_dir: "{{ remote_paths.www }}/vault/tokens"
+
+    client:
+      tokens_dir: "{{ remote_paths.www }}/vault/tokens"

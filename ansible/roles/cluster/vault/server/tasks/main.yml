@@ -1,0 +1,114 @@
+- name: Ensure vault server data dir is present
+  file:
+    path: "{{ vault.remote.server.root_dir }}/data"
+    state: directory
+    owner: vault
+    group: vault
+    mode: 0755
+
+- name: Ensure vault server tokens dir is present
+  file:
+    path: "{{ vault.remote.server.tokens_dir }}"
+    state: directory
+    owner: vault
+    group: vault
+    mode: 0755
+
+- name: Copy server config
+  template:
+    src: server.hcl
+    dest: "{{ vault.remote.server.root_dir }}/config.hcl"
+    owner: vault
+    group: vault
+    mode: 0600
+
+- name: Copy vault server TLS keys
+  copy:
+    src: "{{ item }}"
+    dest: "{{ vault.remote.tls_dir }}/"
+    owner: vault
+    group: vault
+    mode: 0600
+  with_fileglob:
+    - "{{ vault.local.server.tls.keys_dir }}/*"
+
+- name: Copy vault CA key
+  copy:
+    src: "{{ vault.local.server.tls.ca_dir }}/vault-ca.pem"
+    dest: "{{ vault.remote.tls_dir }}/"
+    owner: consul
+    group: consul
+    mode: 0600
+
+- name: Copy vault server env
+  template:
+    src: server.env
+    dest: "{{ vault.remote.server.root_dir }}/server.env"
+    owner: vault
+    group: vault
+    mode: 0600
+
+- name: Copy vault-server systemd service
+  template:
+    src: vault-server.service
+    dest: /etc/systemd/system/vault-server.service
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Start vault-server systemd service
+  systemd:
+    name: vault-server
+    state: restarted
+    enabled: true
+    daemon_reload: yes
+
+- name: Check if root keys exists
+  stat:
+    path: "{{ vault.remote.server.tokens_dir }}/root-keys.json"
+  register: vault_root_keys_initialized
+
+- name: Test connection to vault
+  wait_for:
+    host: localhost
+    port: 8200
+    delay: 5
+    connect_timeout: 15
+    timeout: 30
+
+- name: Initialize operator
+  retries: 15
+  delay: 1
+  register: result
+  until: result.rc == 0
+  when: not vault_root_keys_initialized.stat.exists
+  become_user: vault
+  shell: |
+    vault operator init -key-shares=3 -key-threshold=2 --format=json -tls-skip-verify > {{ vault.remote.server.tokens_dir }}/root-keys.json
+    chmod 0600 {{ vault.remote.server.tokens_dir }}/root-keys.json
+
+- name: Read root-keys.json
+  shell: "cat {{ vault.remote.server.tokens_dir }}/root-keys.json"
+  register: vault_root_keys_result
+
+- name: Set root-keys fact
+  set_fact:
+    vault_root_keys: "{{ vault_root_keys_result.stdout | from_json }}"
+
+- name: Store root token in facts
+  set_fact:
+    vault_root_token: "{{ vault_root_keys.root_token }}"
+
+- name: Check if unsealed
+  stat:
+    path: "{{ vault.remote.server.tokens_dir }}/unseal"
+  register: vault_unseal
+
+- name: Unseal vault
+  when: not vault_unseal.stat.exists
+  shell: |
+    vault operator unseal -tls-skip-verify {{ vault_root_keys.unseal_keys_b64[0] }}
+    vault operator unseal -tls-skip-verify {{ vault_root_keys.unseal_keys_b64[1] }}
+
+    touch {{ vault.remote.server.tokens_dir }}/unseal
+    chmod 0600 {{ vault.remote.server.tokens_dir }}/unseal

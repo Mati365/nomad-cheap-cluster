@@ -1,5 +1,6 @@
 - hosts: web
-  gather_facts: false
+  gather_facts: true
+  tags: facts
   tasks:
     - name: Wait for SSH
       wait_for_connection:
