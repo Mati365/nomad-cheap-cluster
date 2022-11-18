@@ -1,4 +1,5 @@
 - name: Copy nomad-server systemd service
+  register: nomad_server_service
   template:
     src: nomad-server.service
     dest: /etc/systemd/system/nomad-server.service
@@ -15,6 +16,7 @@
     mode: 0755
 
 - name: Copy nomad server TLS keys
+  register: nomad_server_tls_keys
   copy:
     src: "{{ item }}"
     dest: "{{ nomad.remote.tls_dir }}/"
@@ -25,6 +27,7 @@
     - "{{ nomad.local.server.tls.keys_dir }}/*"
 
 - name: Copy nomad CA key
+  register: nomad_server_ca_key
   copy:
     src: "{{ nomad.local.server.tls.ca_dir }}/nomad-ca.pem"
     dest: "{{ nomad.remote.tls_dir }}/"
@@ -33,6 +36,7 @@
     mode: 0600
 
 - name: Copy nomad token file
+  register: nomad_server_token
   copy:
     dest: "{{ nomad.remote.server.root_dir }}/token.key"
     content: "{{ nomad.local.server.token }}"
@@ -41,6 +45,7 @@
     mode: 0600
 
 - name: Copy server config
+  register: nomad_server_config
   template:
     src: server.hcl
     dest: "{{ nomad.remote.server.root_dir }}/config.hcl"
@@ -49,6 +54,7 @@
     mode: 0600
 
 - name: Copy nomad server env
+  register: nomad_server_env
   template:
     src: server.env
     dest: "{{ nomad.remote.server.root_dir }}/server.env"
@@ -57,6 +63,13 @@
     mode: 0600
 
 - name: Start nomad-server systemd service
+  when: >
+    nomad_server_service.changed or
+    nomad_server_tls_keys.changed or
+    nomad_server_ca_key.changed or
+    nomad_server_token.changed or
+    nomad_server_config.changed or
+    nomad_server_env.changed
   systemd:
     name: nomad-server
     state: restarted

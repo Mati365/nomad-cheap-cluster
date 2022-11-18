@@ -7,6 +7,7 @@
     mode: 0755
 
 - name: Copy nomad server TLS keys
+  register: nomad_client_tls_keys
   copy:
     src: "{{ item }}"
     dest: "{{ nomad.remote.tls_dir }}/"
@@ -17,6 +18,7 @@
     - "{{ nomad.local.client.tls.keys_dir }}/*"
 
 - name: Copy nomad CA key
+  register: nomad_client_ca_key
   copy:
     src: "{{ nomad.local.server.tls.ca_dir }}/nomad-ca.pem"
     dest: "{{ nomad.remote.tls_dir }}/"
@@ -25,6 +27,7 @@
     mode: 0600
 
 - name: Copy client config
+  register: nomad_client_config
   template:
     src: client.hcl
     dest: "{{ nomad.remote.client.root_dir }}/config.hcl"
@@ -33,6 +36,7 @@
     mode: 0600
 
 - name: Copy nomad client env
+  register: nomad_client_env
   template:
     src: client.env
     dest: "{{ nomad.remote.client.root_dir }}/client.env"
@@ -41,6 +45,7 @@
     mode: 0600
 
 - name: Copy nomad-client systemd service
+  register: nomad_client_service
   template:
     src: nomad-client.service
     dest: /etc/systemd/system/nomad-client.service
@@ -49,6 +54,12 @@
     mode: 0755
 
 - name: Start nomad client systemd service
+  when: >
+    nomad_client_tls_keys.changed or
+    nomad_client_ca_key.changed or
+    nomad_client_config.changed or
+    nomad_client_env.changed or
+    nomad_client_service.changed
   systemd:
     name: nomad-client
     state: restarted

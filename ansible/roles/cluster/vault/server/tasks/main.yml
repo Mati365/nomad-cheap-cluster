@@ -15,6 +15,7 @@
     mode: 0755
 
 - name: Copy server config
+  register: vault_server_config
   template:
     src: server.hcl
     dest: "{{ vault.remote.server.root_dir }}/config.hcl"
@@ -23,6 +24,7 @@
     mode: 0600
 
 - name: Copy vault server TLS keys
+  register: vault_server_tls_keys
   copy:
     src: "{{ item }}"
     dest: "{{ vault.remote.tls_dir }}/"
@@ -33,6 +35,7 @@
     - "{{ vault.local.server.tls.keys_dir }}/*"
 
 - name: Copy vault CA key
+  register: vault_server_ca_key
   copy:
     src: "{{ vault.local.server.tls.ca_dir }}/vault-ca.pem"
     dest: "{{ vault.remote.tls_dir }}/"
@@ -41,6 +44,7 @@
     mode: 0600
 
 - name: Copy vault server env
+  register: vault_server_env
   template:
     src: server.env
     dest: "{{ vault.remote.server.root_dir }}/server.env"
@@ -49,6 +53,7 @@
     mode: 0600
 
 - name: Copy vault-server systemd service
+  register: vault_server_service
   template:
     src: vault-server.service
     dest: /etc/systemd/system/vault-server.service
@@ -57,6 +62,12 @@
     mode: 0755
 
 - name: Start vault-server systemd service
+  when: >
+    vault_server_config.changed or
+    vault_server_tls_keys.changed or
+    vault_server_ca_key.changed or
+    vault_server_env.changed or
+    vault_server_service.changed
   systemd:
     name: vault-server
     state: restarted
@@ -88,7 +99,6 @@
     if [ "$status" = "false" ]; then
       vault operator init -key-shares=3 -key-threshold=2 --format=json -tls-skip-verify > {{ vault.remote.server.tokens_dir }}/root-keys.json
       chmod 0600 {{ vault.remote.server.tokens_dir }}/root-keys.json
-      rm {{ vault.remote.server.tokens_dir }}/unseal 2> /dev/null
     fi
 
 - name: Read root-keys.json
@@ -104,15 +114,19 @@
     vault_root_token: "{{ vault_root_keys.root_token }}"
 
 - name: Check if unsealed
-  stat:
-    path: "{{ vault.remote.server.tokens_dir }}/unseal"
-  register: vault_unseal
+  shell: vault status -tls-skip-verify -format=json | jq -r '.sealed'
+  register: vault_sealed
 
 - name: Unseal vault
-  when: not vault_unseal.stat.exists
+  when: vault_sealed.stdout == 'true'
   shell: |
     vault operator unseal -tls-skip-verify {{ vault_root_keys.unseal_keys_b64[0] }}
     vault operator unseal -tls-skip-verify {{ vault_root_keys.unseal_keys_b64[1] }}
 
-    touch {{ vault.remote.server.tokens_dir }}/unseal
-    chmod 0600 {{ vault.remote.server.tokens_dir }}/unseal
+- name: Ensure KV2 store enabled
+  shell:
+    key_present=$(VAULT_TOKEN={{ vault_root_token }} vault secrets list -tls-skip-verify -format=json | jq -r 'has("kv-v2/")')
+
+    if [ "$key_present" = "false" ]; then
+      VAULT_TOKEN={{ vault_root_token }} vault secrets enable -tls-skip-verify kv-v2 ;
+    fi

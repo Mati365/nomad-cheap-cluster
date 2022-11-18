@@ -25,6 +25,7 @@
     state: present
 
 - name: Copy docker config
+  register: docker_config
   copy:
     src: daemon.json
     dest: /etc/docker/daemon.json
@@ -33,6 +34,7 @@
     mode: 0644
 
 - name: Copy docker service
+  register: docker_service
   copy:
     src: docker.service
     dest: /lib/systemd/system/
@@ -40,7 +42,8 @@
     group: root
     mode: 0644
 
-- name: Always restart docker server
+- name: Restart docker server
+  when: docker_config.changed or docker_service.changed
   command: /bin/true
   notify:
     - Restart docker

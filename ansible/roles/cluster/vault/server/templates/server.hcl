@@ -1,3 +1,5 @@
+ui = true
+
 cluster_addr  = "https://{{ nomad.remote.advert_real_ip }}:8201"
 api_addr      = "https://{{ nomad.remote.advert_real_ip }}:8200"
 
@@ -8,8 +10,11 @@ listener "tcp" {
   tls_client_ca_file = "{{ vault.remote.tls_dir }}/vault-ca.pem"
 }
 
-storage "consul" {
+storage "raft" {
+  path = "{{ vault.remote.server.root_dir }}/data"
+}
+
+service_registration "consul" {
   address = "http://127.0.0.1:8500"
-  path = "vault/"
   token = "{{ vault_service_policy_key }}"
 }

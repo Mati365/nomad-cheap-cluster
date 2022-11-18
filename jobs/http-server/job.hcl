@@ -2,7 +2,7 @@ job "http-server" {
   datacenters = ["dc1"]
 
   group "http-server" {
-    count = 4
+    count = 3
 
     network {
       mode = "bridge"
