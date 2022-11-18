@@ -22,13 +22,21 @@
     group: consul
     mode: 0755
 
-- name: Copy consul node variables
+- name: Copy consul node env
   template:
     src: node.env
     dest: "{{ consul.remote.client.root_dir }}/node.env"
     owner: consul
     group: consul
-    mode: 0600
+    mode: 0700
+
+- name: Copy consul node script
+  template:
+    src: node-config.sh
+    dest: "{{ consul.remote.client.root_dir }}/node-config.sh"
+    owner: consul
+    group: consul
+    mode: 0700
 
 - name: Copy consul node config
   template:

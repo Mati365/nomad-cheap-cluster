@@ -8,9 +8,8 @@ User=vault
 Group=vault
 Restart=on-failure
 PermissionsStartOnly=true
-EnvironmentFile=-{{ vault.remote.server.root_dir }}/server.env
-ExecStartPre=/sbin/setcap 'cap_ipc_lock=+ep' /usr/bin/vault
-ExecStart=/usr/bin/vault server -config {{ vault.remote.server.root_dir }}/config.hcl
+ExecStartPre={{ vault.remote.server.root_dir }}/server-config.sh
+ExecStart=/usr/bin/vault server -config {{ vault.remote.server.root_dir }}/config-parsed.hcl
 ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGTERM
 

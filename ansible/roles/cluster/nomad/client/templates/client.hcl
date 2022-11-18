@@ -16,9 +16,9 @@ client {
 }
 
 advertise {
-  http = "{{ nomad.remote.advert_real_ip }}:4646"
-  rpc  = "{{ nomad.remote.advert_real_ip }}:4647"
-  serf  = "{{ nomad.remote.advert_real_ip }}:4648"
+  http = "ADVERT_IP_ADDR:4646"
+  rpc  = "ADVERT_IP_ADDR:4647"
+  serf  = "ADVERT_IP_ADDR:4648"
 }
 
 consul {

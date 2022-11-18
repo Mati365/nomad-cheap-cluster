@@ -6,7 +6,7 @@ data_dir   = "{{ consul.remote.server.root_dir }}/data"
 log_level  = "INFO"
 bind_addr = "0.0.0.0"
 client_addr = "0.0.0.0"
-advertise_addr = "{{ nomad.remote.advert_real_ip }}"
+advertise_addr = "ADVERT_IP_ADDR"
 encrypt = "{{ consul.local.encryption.gossip }}"
 
 tls {

@@ -1,7 +1,7 @@
 ui = true
 
-cluster_addr  = "https://{{ nomad.remote.advert_real_ip }}:8201"
-api_addr      = "https://{{ nomad.remote.advert_real_ip }}:8200"
+cluster_addr  = "https://ADVERT_IP_ADDR:8201"
+api_addr      = "https://ADVERT_IP_ADDR:8200"
 
 listener "tcp" {
   address            = "0.0.0.0:8200"

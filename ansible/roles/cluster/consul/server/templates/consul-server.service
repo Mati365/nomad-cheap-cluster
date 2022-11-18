@@ -10,7 +10,8 @@ StartLimitIntervalSec=150s
 EnvironmentFile=-{{ consul.remote.server.root_dir }}/server.env
 User=consul
 Group=consul
-ExecStart=/usr/bin/consul agent -config-file={{ consul.remote.server.root_dir }}/server.hcl
+ExecStartPre={{ consul.remote.server.root_dir }}/server-config.sh
+ExecStart=/usr/bin/consul agent -config-file={{ consul.remote.server.root_dir }}/server-parsed.hcl
 ExecReload=/bin/kill --signal HUP $MAINPID
 KillMode=process
 KillSignal=SIGTERM

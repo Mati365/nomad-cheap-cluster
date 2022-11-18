@@ -44,6 +44,14 @@
     group: consul
     mode: 0600
 
+- name: Copy consul server script
+  template:
+    src: server-config.sh
+    dest: "{{ consul.remote.server.root_dir }}/server-config.sh"
+    owner: consul
+    group: consul
+    mode: 0700
+
 - name: Copy consul systemd service
   template:
     src: consul-server.service

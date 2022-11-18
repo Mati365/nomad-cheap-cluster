@@ -52,6 +52,15 @@
     group: vault
     mode: 0600
 
+- name: Copy vault server script
+  register: vault_server_script
+  template:
+    src: server-config.sh
+    dest: "{{ vault.remote.server.root_dir }}/server-config.sh"
+    owner: vault
+    group: vault
+    mode: 0700
+
 - name: Copy vault-server systemd service
   register: vault_server_service
   template:
@@ -66,8 +75,9 @@
     vault_server_config.changed or
     vault_server_tls_keys.changed or
     vault_server_ca_key.changed or
-    vault_server_env.changed or
-    vault_server_service.changed
+    vault_server_script.changed or
+    vault_server_service.changed or
+    vault_server_env.changed
   systemd:
     name: vault-server
     state: restarted

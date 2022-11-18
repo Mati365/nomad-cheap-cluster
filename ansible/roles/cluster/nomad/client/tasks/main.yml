@@ -44,6 +44,15 @@
     group: nomad
     mode: 0600
 
+- name: Copy nomad client script
+  register: nomad_client_script
+  template:
+    src: client-config.sh
+    dest: "{{ nomad.remote.client.root_dir }}/client-config.sh"
+    owner: nomad
+    group: nomad
+    mode: 0700
+
 - name: Copy nomad-client systemd service
   register: nomad_client_service
   template:
@@ -58,6 +67,7 @@
     nomad_client_tls_keys.changed or
     nomad_client_ca_key.changed or
     nomad_client_config.changed or
+    nomad_client_script.changed or
     nomad_client_env.changed or
     nomad_client_service.changed
   systemd:

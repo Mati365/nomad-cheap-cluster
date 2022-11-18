@@ -1,11 +1,11 @@
 datacenter = "dc1"
-node_name  = "consul-node-{{ node_id }}"
+node_name  = "consul-node-NODE_ID"
 server     = false
 data_dir   = "{{ consul.remote.client.root_dir }}/data"
 log_level  = "INFO"
 retry_join = ["{{ addresses.consul.ip }}"]
 bind_addr = "0.0.0.0"
-advertise_addr = "{{ nomad.remote.advert_real_ip }}"
+advertise_addr = "ADVERT_IP_ADDR"
 
 encrypt = "{{ consul.local.encryption.gossip }}"
 

@@ -53,7 +53,7 @@
     group: nomad
     mode: 0600
 
-- name: Copy nomad server env
+- name: Copy nomad env script
   register: nomad_server_env
   template:
     src: server.env
@@ -62,6 +62,15 @@
     group: nomad
     mode: 0600
 
+- name: Copy nomad server script
+  register: nomad_server_script
+  template:
+    src: server-config.sh
+    dest: "{{ nomad.remote.server.root_dir }}/server-config.sh"
+    owner: nomad
+    group: nomad
+    mode: 0700
+
 - name: Start nomad-server systemd service
   when: >
     nomad_server_service.changed or
@@ -69,7 +78,8 @@
     nomad_server_ca_key.changed or
     nomad_server_token.changed or
     nomad_server_config.changed or
-    nomad_server_env.changed
+    nomad_server_env.changed or
+    nomad_server_script.changed
   systemd:
     name: nomad-server
     state: restarted

@@ -63,7 +63,6 @@ nomad:
         keys_dir: "{{ local_paths.all_keys }}/nomad/tls/client"
 
   remote:
-    advert_real_ip: "{{ ip.advert }}"
     root_dir: "{{ remote_paths.www }}/nomad"
     tls_dir: "{{ remote_paths.www }}/nomad/tls"
 
