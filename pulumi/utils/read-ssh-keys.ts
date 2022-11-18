@@ -10,13 +10,24 @@ type SSHKey = {
   file: string;
 };
 
-export const readSSHKeys = (keys: SSHKey[]) =>
-  keys.map(({ file, name }) => {
-    const absolutePath = file.startsWith("~")
-      ? path.join(os.homedir(), file.slice(2))
-      : resolveProjectKeyPath(file);
+export const readSSHKeySync = (file: string) => {
+  const absolutePath = file.startsWith("~")
+    ? path.join(os.homedir(), file.slice(2))
+    : resolveProjectKeyPath(file);
 
-    return new hcloud.SshKey(name, {
-      publicKey: fs.readFileSync(absolutePath, "utf-8"),
-    });
-  });
+  return fs.readFileSync(absolutePath, "utf-8");
+};
+
+export const readSSHKeys = (keys: SSHKey[]) => {
+  const hcloudKeys = keys.map(
+    ({ file, name }) =>
+      new hcloud.SshKey(name, {
+        publicKey: readSSHKeySync(file),
+      })
+  );
+
+  return {
+    names: keys.map((key) => key.name),
+    hcloudKeys,
+  };
+};

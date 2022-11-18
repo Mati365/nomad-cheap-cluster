@@ -1,6 +1,5 @@
 env: dev
 ip:
-  advert: "{{ ansible_eth1.ipv4.address }}"
   cidr: "{{ ansible_eth1.ipv4.network }}/24"
   interface:
     default: "eth1"
