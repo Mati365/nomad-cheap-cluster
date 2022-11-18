@@ -1,6 +1,7 @@
 node_version: 18
 
 local_paths:
+  project: "{{ playbook_dir | dirname }}"
   all_keys: "{{ playbook_dir }}/keys"
 
 remote_paths:

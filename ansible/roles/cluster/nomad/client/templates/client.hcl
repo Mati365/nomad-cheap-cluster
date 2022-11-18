@@ -5,6 +5,11 @@ bind_addr = "0.0.0.0"
 client {
   enabled = true
 
+  host_network "internal-cluster-network" {
+    cidr = "{{ ip.cidr }}"
+    interface = "{{ ip.interface.default }}"
+  }
+
   template {
     disable_file_sandbox = true
   }

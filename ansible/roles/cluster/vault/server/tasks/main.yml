@@ -81,11 +81,15 @@
   delay: 1
   register: result
   until: result.rc == 0
-  when: not vault_root_keys_initialized.stat.exists
   become_user: vault
   shell: |
-    vault operator init -key-shares=3 -key-threshold=2 --format=json -tls-skip-verify > {{ vault.remote.server.tokens_dir }}/root-keys.json
-    chmod 0600 {{ vault.remote.server.tokens_dir }}/root-keys.json
+    status=$(vault status -tls-skip-verify -format=json | jq -r '.initialized')
+
+    if [ "$status" = "false" ]; then
+      vault operator init -key-shares=3 -key-threshold=2 --format=json -tls-skip-verify > {{ vault.remote.server.tokens_dir }}/root-keys.json
+      chmod 0600 {{ vault.remote.server.tokens_dir }}/root-keys.json
+      rm {{ vault.remote.server.tokens_dir }}/unseal 2> /dev/null
+    fi
 
 - name: Read root-keys.json
   shell: "cat {{ vault.remote.server.tokens_dir }}/root-keys.json"

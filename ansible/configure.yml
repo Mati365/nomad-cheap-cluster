@@ -15,9 +15,9 @@
     apt:
       install_recommends: no
   roles:
-    - role: common/dns
-    - role: common/firewall
     - role: common/utils
+    - role: common/firewall
+    - role: common/dns
     - role: common/sshd
     - role: common/users
     - role: common/fish

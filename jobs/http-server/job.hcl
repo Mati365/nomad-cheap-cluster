@@ -2,10 +2,13 @@ job "http-server" {
   datacenters = ["dc1"]
 
   group "http-server" {
-    count = 3
+    count = 4
 
     network {
+      mode = "bridge"
+
       port "http" {
+        host_network = "internal-cluster-network"
         to = 80
       }
     }
@@ -16,14 +19,14 @@ job "http-server" {
 
       tags = [
         "traefik.enable=true",
-        "traefik.http.routers.example.rule=Host(`example.pl`)",
+        "traefik.http.routers.example.rule=Path(`/`)",
       ]
 
       check {
         type     = "http"
         path     = "/"
         interval = "2s"
-        timeout  = "2s"
+        timeout  = "1s"
       }
     }
 

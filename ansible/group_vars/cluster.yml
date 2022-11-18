@@ -4,6 +4,7 @@ docker:
   volumes_path: "{{ remote_paths.www }}/volumes"
 
 all_groups:
+  - name: wheel
   - name: webusers
   - name: deployusers
   - name: docker
@@ -48,6 +49,9 @@ consul:
 
 nomad:
   local:
+    jobs:
+      root_dir: "{{ local_paths.project }}/jobs"
+
     server:
       token: "{{ lookup('file', local_paths.all_keys + '/nomad/token.key') }}"
       tls:
@@ -59,7 +63,7 @@ nomad:
         keys_dir: "{{ local_paths.all_keys }}/nomad/tls/client"
 
   remote:
-    advert_real_ip: "{{ ansible_eth1.ipv4.address }}"
+    advert_real_ip: "{{ ip.advert }}"
     root_dir: "{{ remote_paths.www }}/nomad"
     tls_dir: "{{ remote_paths.www }}/nomad/tls"
 

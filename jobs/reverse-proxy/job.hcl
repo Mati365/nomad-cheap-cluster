@@ -11,6 +11,8 @@ job "reverse-proxy" {
     count = 1
 
     network {
+      mode = "host"
+
       port "http" {
         static = 80
       }

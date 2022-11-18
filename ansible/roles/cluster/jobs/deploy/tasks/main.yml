@@ -9,8 +9,8 @@
 - name: Deploy jobs
   include_tasks: deploy-job.yml
   vars:
-    job_dir: "{{ item }}"
-    job_name: "{{ item | split('/') | last }}"
+    job_dir: "{{ nomad.local.jobs.root_dir }}/{{ item }}"
+    job_name: "{{ item }}"
   with_items:
-    - "jobs/http-server"
-    - "jobs/reverse-proxy"
+    - "http-server"
+    - "reverse-proxy"

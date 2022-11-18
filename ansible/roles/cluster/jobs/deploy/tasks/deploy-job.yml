@@ -26,7 +26,7 @@
   loop_control:
     loop_var: file
   with_fileglob:
-    - "../templates/{{ job_dir }}/*"
+    - "{{ job_dir }}/*"
 
 - name: Apply {{ job_name }} to cluster
   become_user: nomad

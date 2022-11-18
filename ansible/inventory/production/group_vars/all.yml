@@ -1,0 +1,6 @@
+env: dev
+ip:
+  advert: "{{ ansible_ens10.ipv4.address }}"
+  cidr: "{{ ansible_ens10.ipv4.network }}/24"
+  interface:
+    default: "ens10"
