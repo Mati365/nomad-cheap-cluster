@@ -1,5 +1,5 @@
 - name: Check if cluster_interface is defined
-  shell: cat /etc/network/cluster-network-card-name
+  shell: cat /etc/network/cluster-network-card-name 2>/dev/null || true
   register: card_name_result
 
 - name: Set cluster_interface fact

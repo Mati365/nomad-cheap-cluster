@@ -7,7 +7,7 @@ defaults = {
   ram: 2024,
   user: 'ansible',
   ssh: {
-    pub: File.readlines('../ansible/keys/ansible/id_rsa.pub').first.strip
+    pub: File.readlines('../keys/ansible/id_rsa.pub').first.strip
   },
 }
 
