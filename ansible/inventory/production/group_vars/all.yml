@@ -1,4 +1,4 @@
-env: dev
+env: production
 ip:
   cidr: "{{ ansible_ens10.ipv4.network }}/24"
   interface:

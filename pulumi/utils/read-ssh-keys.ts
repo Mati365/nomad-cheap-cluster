@@ -5,9 +5,8 @@ import * as hcloud from "@pulumi/hcloud";
 
 import { resolveProjectKeyPath } from "./resolve-project-key-path";
 
-type SSHKey = {
-  name: string;
-  file: string;
+type SSHKeys = {
+  [name: string]: string;
 };
 
 export const readSSHKeySync = (file: string) => {
@@ -18,16 +17,16 @@ export const readSSHKeySync = (file: string) => {
   return fs.readFileSync(absolutePath, "utf-8");
 };
 
-export const readSSHKeys = (keys: SSHKey[]) => {
-  const hcloudKeys = keys.map(
-    ({ file, name }) =>
+export const readSSHKeys = (keys: SSHKeys) => {
+  const hcloudKeys = Object.entries(keys).map(
+    ([name, file]) =>
       new hcloud.SshKey(name, {
         publicKey: readSSHKeySync(file),
       })
   );
 
   return {
-    names: keys.map((key) => key.name),
+    names: Object.keys(keys),
     hcloudKeys,
   };
 };

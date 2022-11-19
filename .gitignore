@@ -18,3 +18,4 @@ ansible/keys/vault/tls/*/*.pem
 pulumi/Pulumi.*
 
 node_modules/
+dist/

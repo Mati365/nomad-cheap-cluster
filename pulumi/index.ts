@@ -1,15 +1,23 @@
+import * as path from "path";
+import * as fs from "fs";
+
 import * as hcloud from "@pulumi/hcloud";
+import * as pulumi from "@pulumi/pulumi";
+// import { local } from "@pulumi/command";
+
 import {
   readSSHKeys,
   createFirewallRuleForPorts,
   readSSHKeySync,
+  ensureDirIsEmpty,
+  resolveDistPath,
 } from "./utils";
 
 const createSiteStack = () => {
-  const { hcloudKeys: defaultSshKeys, names: sshKeysNames } = readSSHKeys([
-    { name: "default", file: "~/.ssh/id_rsa.pub" },
-    { name: "ansible", file: "ansible/id_rsa.pub" },
-  ]);
+  const { hcloudKeys: defaultSshKeys, names: sshKeysNames } = readSSHKeys({
+    default: "~/.ssh/id_rsa.pub",
+    ansible: "ansible/id_rsa.pub",
+  });
 
   const clusterNodeFirewall = new hcloud.Firewall("cluster-node-firewall", {
     rules: [
@@ -32,7 +40,7 @@ const createSiteStack = () => {
 
   const networkSubnet = new hcloud.NetworkSubnet("network-subnet", {
     type: "cloud",
-    networkId: network.id.apply((id) => +id),
+    networkId: network.id as any,
     networkZone: "eu-central",
     ipRange: "10.0.0.0/24",
   });
@@ -49,59 +57,91 @@ const createSiteStack = () => {
           - ${readSSHKeySync("ansible/id_rsa.pub")}
   `;
 
-  return {
-    server: new hcloud.Server(
-      "nomad-server",
+  const serverConfig = {
+    image: "debian-11",
+    location: "fsn1",
+    firewallIds: [clusterNodeFirewall.id as any],
+    sshKeys: sshKeysNames,
+    publicNets: [
       {
+        ipv4Enabled: true,
+      },
+    ],
+    userData,
+  };
+
+  const cluster = pulumi
+    .all([...defaultSshKeys, networkSubnet, clusterNodeFirewall])
+    .apply(() => ({
+      server: new hcloud.Server("nomad-server", {
+        ...serverConfig,
         serverType: "cx21",
-        image: "debian-11",
-        location: "fsn1",
-        firewallIds: [clusterNodeFirewall.id as any],
-        sshKeys: sshKeysNames,
         networks: [
           {
-            networkId: network.id.apply((id) => +id),
+            networkId: network.id as any,
             ip: "10.0.0.2",
           },
         ],
-        publicNets: [
-          {
-            ipv4Enabled: true,
-          },
-        ],
-        userData,
-      },
-      {
-        dependsOn: [...defaultSshKeys, networkSubnet, clusterNodeFirewall],
-      }
-    ),
+      }),
 
-    client: new hcloud.Server(
-      "nomad-client",
-      {
+      client: new hcloud.Server("nomad-client", {
+        ...serverConfig,
         serverType: "cpx11",
-        image: "debian-11",
-        location: "fsn1",
-        firewallIds: [clusterNodeFirewall.id.apply((id) => +id)],
-        sshKeys: sshKeysNames,
-        publicNets: [
-          {
-            ipv4Enabled: true,
-          },
-        ],
         networks: [
           {
-            networkId: network.id.apply((id) => +id),
+            networkId: network.id as any,
             ip: "10.0.0.3",
           },
         ],
-        userData,
-      },
-      {
-        dependsOn: [...defaultSshKeys, networkSubnet, clusterNodeFirewall],
-      }
-    ),
-  };
+      }),
+    }));
+
+  cluster.apply(({ server, client }) => {
+    const resolveInventoryPath = (file: string = "") =>
+      resolveDistPath(path.join("ansible", "inventory", file));
+
+    const inventory = `
+      [server]
+      ${server.ipv4Address.get()}
+
+      [client]
+      ${client.ipv4Address.get()}
+
+      [cluster:children]
+      server
+      client
+
+      [web:children]
+      cluster
+    `.trim();
+
+    const serverPrivateIp = server.networks.get()?.[0].ip;
+    const groupVars = `
+      env: dev
+      ip:
+        cidr: "${networkSubnet.ipRange.get()}"
+        interface:
+          default: "ens10"
+
+      addresses:
+        consul:
+          ip: ${serverPrivateIp}
+          port: 8500
+          dns_port: 8600
+          stats_port: 3000
+
+        server: ${serverPrivateIp}
+    `.trim();
+
+    const inventoryHostsPath = resolveInventoryPath("hosts.cfg");
+    const groupVarsPath = resolveInventoryPath("group_vars/all.ini");
+
+    ensureDirIsEmpty(resolveInventoryPath());
+    ensureDirIsEmpty(resolveInventoryPath("group_vars"));
+
+    fs.writeFileSync(inventoryHostsPath, inventory, "utf-8");
+    fs.writeFileSync(groupVarsPath, groupVars, "utf-8");
+  });
 };
 
 createSiteStack();
