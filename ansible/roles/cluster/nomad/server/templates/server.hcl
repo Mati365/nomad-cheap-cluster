@@ -11,8 +11,8 @@ client {
   enabled = true
 
   host_network "internal-cluster-network" {
-    cidr = "{{ ip.cidr }}"
-    interface = "{{ ip.interface.default }}"
+    cidr = "{{ cluster_cidr }}"
+    interface = "{{ cluster_interface }}"
   }
 
   template {

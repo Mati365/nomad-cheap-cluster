@@ -15,6 +15,7 @@
     apt:
       install_recommends: no
   roles:
+    - role: common/network
     - role: common/utils
     - role: common/firewall
     - role: common/dns
@@ -30,6 +31,7 @@
   gather_facts: true
   become: true
   roles:
+    - role: common/network
     - role: cluster/cni
     - role: cluster/docker/daemon
     - role: cluster/docker/skeleton

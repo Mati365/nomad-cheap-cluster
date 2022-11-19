@@ -1,8 +1,0 @@
-addresses:
-  consul:
-    ip: 10.0.0.2
-    port: 8500
-    dns_port: 8600
-    stats_port: 3000
-
-  server: 10.0.0.2

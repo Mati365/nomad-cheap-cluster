@@ -1,5 +1,4 @@
 env: dev
-ip:
-  cidr: "{{ ansible_eth1.ipv4.network }}/24"
-  interface:
-    default: "eth1"
+
+cluster_cidr: "{{ ansible_eth1.ipv4.network }}/24"
+cluster_interface: "eth1"

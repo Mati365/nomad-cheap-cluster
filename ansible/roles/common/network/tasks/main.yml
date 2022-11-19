@@ -1,0 +1,8 @@
+- name: Check if cluster_interface is defined
+  shell: cat /etc/network/cluster-network-card-name
+  register: card_name_result
+
+- name: Set cluster_interface fact
+  when: cluster_interface is not defined
+  set_fact:
+    cluster_interface: "{{ card_name_result.stdout }}"

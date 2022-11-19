@@ -21,6 +21,6 @@
 -A INPUT -p udp --match multiport --dports 8600,8301,8302 -j ACCEPT
 
 -A FORWARD -j ACCEPT
--I DOCKER-USER -i {{ ip.interface.default }} -p tcp --dport 5000:32767 -j DROP
+-I DOCKER-USER -i {{ cluster_interface }} -p tcp --dport 5000:32767 -j DROP
 -A DOCKER-USER -j RETURN
 COMMIT
