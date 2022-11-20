@@ -1,4 +1,3 @@
-# https://developer.hashicorp.com/nomad/tutorials/stateful-workloads/stateful-workloads-host-volumes
 job "postgres" {
   datacenters = ["dc1"]
   type = "service"
@@ -20,12 +19,11 @@ job "postgres" {
     count = 1
 
     network {
-      mode = "bridge"
+      mode = "host"
 
       port "db" {
         host_network = "internal-cluster-network"
         static = 5432
-        to = 5432
       }
     }
 
@@ -70,6 +68,7 @@ job "postgres" {
       config {
         image = "postgres:15.1"
         ports = ["db"]
+        network_mode = "host"
 
         volumes = [
           "secrets/pass.env:/etc/pass.env"
