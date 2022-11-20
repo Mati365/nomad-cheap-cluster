@@ -18,3 +18,4 @@ ansible/keys/vault/tls/*/*.pem
 
 node_modules/
 dist/
+tmp/

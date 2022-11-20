@@ -10,7 +10,7 @@ import {
   isPortReachable,
   resolveDistPath,
   resolveProjectAnsiblePath,
-} from "@site/utils";
+} from "@infra/shared";
 
 import { AppCluster } from "./create-skeleton-cluster";
 

@@ -1,8 +1,10 @@
 import * as aws from "@pulumi/aws";
 
 export const createConfigBucket = () => {
-  const bucket = new aws.s3.Bucket("upolujksiazke-config-bucket", {
+  const bucketName = "upolujksiazke-config-bucket";
+  const bucket = new aws.s3.Bucket(bucketName, {
     acl: "private",
+    bucket: bucketName,
   });
 
   const accessBlock = new aws.s3.BucketPublicAccessBlock(

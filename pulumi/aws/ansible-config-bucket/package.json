@@ -1,15 +1,15 @@
 {
-  "name": "@site/core",
+  "name": "@infra/aws-ansible-config-bucket",
   "main": "index.ts",
   "version": "1.0.0",
   "devDependencies": {
     "@types/node": "^18"
   },
   "dependencies": {
+    "@pulumi/aws": "^5.0.0",
+    "@pulumi/awsx": "^0.40.0",
     "@pulumi/command": "^0.6.0",
-    "@pulumi/hcloud": "^1.10.1",
     "@pulumi/pulumi": "^3.0.0",
-    "@types/mkdirp": "^1.0.2",
-    "mkdirp": "^1.0.4"
+    "zip-a-folder": "^1.1.5"
   }
 }

@@ -1,5 +1,5 @@
 {
   "private": true,
   "version": "1.0.0",
-  "workspaces": ["site", "site-builder", "site-utils"]
+  "workspaces": ["shared", "aws/ansible-config-bucket", "hetzner/nomad-cluster"]
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@site/utils",
+  "name": "@infra/shared",
   "main": "src/index.ts",
   "version": "1.0.0",
   "devDependencies": {

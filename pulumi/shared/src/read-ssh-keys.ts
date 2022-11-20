@@ -3,7 +3,7 @@ import * as os from "os";
 import * as path from "path";
 import * as hcloud from "@pulumi/hcloud";
 
-import { resolveProjectKeyPath } from "./resolve-project-path";
+import { resolveProjectKeysPath } from "./paths/resolve-project-path";
 
 type SSHKeys = {
   [name: string]: string;
@@ -12,7 +12,7 @@ type SSHKeys = {
 export const readSSHKeySync = (file: string) => {
   const absolutePath = file.startsWith("~")
     ? path.join(os.homedir(), file.slice(2))
-    : resolveProjectKeyPath(file);
+    : resolveProjectKeysPath(file);
 
   return fs.readFileSync(absolutePath, "utf-8");
 };
