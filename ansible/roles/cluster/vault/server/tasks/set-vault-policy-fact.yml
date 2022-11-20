@@ -1,0 +1,12 @@
+- name: Read policy ACL
+  delegate_to: "{{ groups['server'][0] }}"
+  delegate_facts: true
+  command: cat "{{ vault.remote.tokens_dir }}/{{ policy_name }}.key"
+  register: vault_policy
+
+- name: Set policy fact
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  with_items: "{{ groups['cluster'] }}"
+  set_fact:
+    "{{ policy_name | replace('-', '_') }}_vault_key": "{{ vault_policy.stdout }}"

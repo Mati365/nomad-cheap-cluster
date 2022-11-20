@@ -100,38 +100,8 @@
       sleep 1
     done
 
-# ACLs
-- name: Ensure acl dir exists
-  file:
-    path: "{{ consul.remote.acl_dir }}/"
-    state: directory
-    owner: consul
-    group: consul
-    mode: 0700
-
-- name: Find ACLs
-  become: false
-  delegate_to: localhost
-  find:
-    paths: "{{ consul.local.acl_dir }}/"
-    patterns: '*.hcl'
-    file_type: file
-  register : acl_keys_paths
-
-- name: Install ACL files
-  include_tasks: ./install-acl-file.yml
-  loop: "{{ acl_keys_paths.files }}"
-  loop_control:
-    loop_var: file
-
-- name: Set default anonymous token
-  become_user: consul
-  shell: |
-    consul acl token update \
-      -id 00000000-0000-0000-0000-000000000002 \
-      -token-file "{{ consul.remote.tokens_dir }}/bootstrap.key" \
-      -policy-name "anonymous-policy" \
-      -description "Anonymous Token - Can list nodes and services"
+- name: Install ACLs
+  include_tasks: ./install-acls.yml
 
 # Restart server after ACL loaded
 - name: Copy consul server variables

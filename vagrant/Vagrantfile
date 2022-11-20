@@ -4,7 +4,7 @@ defaults = {
   prefix: 'test-app',
   net: '192.168.56',
   box: 'generic/debian11',
-  ram: 2024,
+  ram: 4048,
   user: 'ansible',
   ssh: {
     pub: File.readlines('../keys/ansible/id_rsa.pub').first.strip

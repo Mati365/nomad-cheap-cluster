@@ -1,18 +1,19 @@
-- name: Ensure vault server data dir is present
-  file:
-    path: "{{ vault.remote.server.root_dir }}/data"
-    state: directory
-    owner: vault
-    group: vault
-    mode: 0755
+- name: Read consul vault ACL
+  include_tasks: roles/cluster/consul/server/tasks/set-acl-policy-fact.yml
+  vars:
+    policy_name: vault-service-policy
 
-- name: Ensure vault server tokens dir is present
+- name: Ensure vault dir is present
   file:
-    path: "{{ vault.remote.server.tokens_dir }}"
+    path: "{{ item }}"
     state: directory
     owner: vault
     group: vault
     mode: 0755
+  with_items:
+    - "{{ vault.remote.server.root_dir }}/data"
+    - "{{ vault.remote.server.tokens_dir }}"
+    - "{{ vault.remote.server.policies_dir }}"
 
 - name: Copy server config
   register: vault_server_config
@@ -111,27 +112,15 @@
       chmod 0600 {{ vault.remote.server.tokens_dir }}/root-keys.json
     fi
 
-- name: Read root-keys.json
-  shell: "cat {{ vault.remote.server.tokens_dir }}/root-keys.json"
-  register: vault_root_keys_result
-
-- name: Set root-keys fact
-  set_fact:
-    vault_root_keys: "{{ vault_root_keys_result.stdout | from_json }}"
-
-- name: Store root token in facts
-  set_fact:
-    vault_root_token: "{{ vault_root_keys.root_token }}"
-
-- name: Check if unsealed
-  shell: vault status -tls-skip-verify -format=json | jq -r '.sealed'
-  register: vault_sealed
-
 - name: Unseal vault
-  when: vault_sealed.stdout == 'true'
-  shell: |
-    vault operator unseal -tls-skip-verify {{ vault_root_keys.unseal_keys_b64[0] }}
-    vault operator unseal -tls-skip-verify {{ vault_root_keys.unseal_keys_b64[1] }}
+  include_tasks: vault-unseal.yml
+
+- name: Sync policy
+  include_tasks: sync-policy.yml
+  vars:
+    file_path: "{{ item }}"
+  with_fileglob:
+    - "{{ vault.local.server.policies_dir }}/*.hcl"
 
 - name: Ensure KV2 store enabled
   shell:

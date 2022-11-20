@@ -1,0 +1,11 @@
+- name: Read root-keys.json
+  shell: "cat {{ vault.remote.server.tokens_dir }}/root-keys.json"
+  register: vault_root_keys_result
+
+- name: Set root-keys fact
+  set_fact:
+    vault_root_keys: "{{ vault_root_keys_result.stdout | from_json }}"
+
+- name: Store root token in facts
+  set_fact:
+    vault_root_token: "{{ vault_root_keys.root_token }}"

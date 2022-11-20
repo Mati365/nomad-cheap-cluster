@@ -3,6 +3,8 @@
   gather_facts: true
   become: true
   roles:
+    - role: common/network
+
     - role: cluster/nomad/shared
       tags: nomad
 

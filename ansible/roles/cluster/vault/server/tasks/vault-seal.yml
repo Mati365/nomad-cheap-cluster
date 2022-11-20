@@ -1,0 +1,12 @@
+- name: Read root vault key
+  include_tasks: read-root-key.yml
+  when: vault_root_token is not defined
+
+- name: Check if sealed
+  shell: vault status -tls-skip-verify -format=json | jq -r '.sealed'
+  register: vault_sealed
+
+- name: Seal vault
+  when: vault_sealed.stdout == 'false'
+  shell: |
+    VAULT_TOKEN={{ vault_root_token }} vault operator seal -tls-skip-verify

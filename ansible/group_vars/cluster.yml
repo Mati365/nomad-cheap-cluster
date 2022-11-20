@@ -78,6 +78,8 @@ nomad:
 vault:
   local:
     server:
+      policies_dir: "{{ local_paths.all_keys }}/vault/policies"
+
       tls:
         ca_dir: "{{ local_paths.all_keys }}/vault/tls/ca"
         keys_dir: "{{ local_paths.all_keys }}/vault/tls/server"
@@ -92,6 +94,7 @@ vault:
     server:
       root_dir: "{{ remote_paths.www }}/vault/server"
       tokens_dir: "{{ remote_paths.www }}/vault/tokens"
+      policies_dir: "{{ remote_paths.www }}/vault/policies"
 
     client:
       tokens_dir: "{{ remote_paths.www }}/vault/tokens"

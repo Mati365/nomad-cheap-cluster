@@ -15,6 +15,16 @@ client {
     interface = "{{ cluster_interface }}"
   }
 
+  host_volume "postgres-data" {
+    path = "{{ docker.volumes_path }}/postgres"
+    read_only = false
+  }
+
+  host_volume "elasticsearch-data" {
+    path = "{{ docker.volumes_path }}/elasticsearch"
+    read_only = false
+  }
+
   template {
     disable_file_sandbox = true
   }

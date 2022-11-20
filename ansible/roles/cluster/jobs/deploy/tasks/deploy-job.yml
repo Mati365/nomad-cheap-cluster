@@ -32,9 +32,9 @@
   become_user: nomad
   shell: |
     nomad job run \
-        -address=https://localhost:4646 \
-        -ca-path=/var/www/nomad/tls/nomad-ca.pem \
-        -client-cert=/var/www/nomad/tls/server.pem \
-        -client-key=/var/www/nomad/tls/server-key.pem \
-        -token=$(jq -r '.SecretID' /var/www/nomad/server/bootstrap.json) \
-        {{ nomad.remote.jobs.root_dir + '/' + job_name + '/job.hcl' }}
+      -address=https://localhost:4646 \
+      -ca-path=/var/www/nomad/tls/nomad-ca.pem \
+      -client-cert=/var/www/nomad/tls/server.pem \
+      -client-key=/var/www/nomad/tls/server-key.pem \
+      -token=$(jq -r '.SecretID' /var/www/nomad/server/bootstrap.json) \
+      {{ nomad.remote.jobs.root_dir + '/' + job_name + '/job.hcl' }}

@@ -31,7 +31,6 @@
   gather_facts: true
   become: true
   roles:
-    - role: common/network
     - role: cluster/cni
     - role: cluster/docker/daemon
     - role: cluster/docker/skeleton

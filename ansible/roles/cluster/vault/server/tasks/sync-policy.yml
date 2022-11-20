@@ -1,0 +1,44 @@
+- name: Copy policy to remote
+  copy:
+    src: "{{ file_path }}"
+    dest: "{{ vault.remote.server.policies_dir }}/"
+    owner: vault
+    group: vault
+    mode: 0600
+
+- name: Extract policy name from path
+  set_fact:
+    policy_name: "{{ file_path | basename | split('.') | first }}"
+
+- name: Remove old policy is present
+  shell: |
+    PREV_POLICY_NAME=$( \
+      VAULT_TOKEN={{ vault_root_token }} vault policy list \
+        -tls-skip-verify \
+        -format="json" | jq -r '.[] | select(contains("{{ policy_name }}"))' \
+    )
+
+    if [ -n "$PREV_POLICY_NAME" ]; then
+      VAULT_TOKEN={{ vault_root_token }} vault policy delete -tls-skip-verify $PREV_POLICY_NAME ;
+    fi
+
+    VAULT_TOKEN={{ vault_root_token }} vault policy write \
+      -tls-skip-verify {{ policy_name }} {{ vault.remote.server.policies_dir }}/{{ file_path | basename }}
+
+    TOKEN_PATH="{{ vault.remote.server.tokens_dir }}/{{ policy_name }}.key"
+    NEW_TOKEN=$( \
+      VAULT_TOKEN={{ vault_root_token }} vault token create \
+        -tls-skip-verify \
+        -field token \
+        -policy={{ policy_name }}.key \
+    )
+
+    if [ -f "$TOKEN_PATH" ]; then
+      OLD_TOKEN=$(cat "$TOKEN_PATH")
+      VAULT_TOKEN={{ vault_root_token }} vault token revoke -tls-skip-verify "$OLD_TOKEN"
+      rm $TOKEN_PATH 2>/dev/null
+    fi
+
+    if [ -n "$NEW_TOKEN" ]; then
+      echo "$NEW_TOKEN" > $TOKEN_PATH
+    fi

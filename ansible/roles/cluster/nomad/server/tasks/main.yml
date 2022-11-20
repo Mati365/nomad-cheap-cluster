@@ -1,3 +1,14 @@
+- name: Create server volumes entry
+  file:
+    path: "{{ docker.volumes_path }}/{{ item }}"
+    state: directory
+    owner: nomad
+    group: nomad
+    mode: 0755
+  with_items:
+    - postgres
+    - elasticsearch
+
 - name: Copy nomad-server systemd service
   register: nomad_server_service
   template:

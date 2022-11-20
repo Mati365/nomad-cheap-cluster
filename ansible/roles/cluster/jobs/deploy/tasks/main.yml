@@ -12,5 +12,5 @@
     job_dir: "{{ nomad.local.jobs.root_dir }}/{{ item }}"
     job_name: "{{ item }}"
   with_items:
-    - "http-server"
-    - "reverse-proxy"
+    - postgres
+    - reverse-proxy
