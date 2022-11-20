@@ -15,7 +15,7 @@ ansible/keys/vault/tls/*/*.pem
 *.pem
 *.csr
 *.key
-pulumi/Pulumi.*
+Pulumi.*.yaml
 
 node_modules/
 dist/
