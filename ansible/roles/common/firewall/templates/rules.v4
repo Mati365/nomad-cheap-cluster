@@ -17,7 +17,7 @@
 -A INPUT -p udp --match multiport --dports 4648 -j ACCEPT
 
 # Consul
--A INPUT -p tcp --match multiport --dports 8600,8500,8301,8302,8300,3000,8200,8201 -j ACCEPT
+-A INPUT -p tcp --match multiport --dports 8600,8500,8301,8302,8300,3000,8200,8201,5432 -j ACCEPT
 -A INPUT -p udp --match multiport --dports 8600,8301,8302 -j ACCEPT
 
 -A FORWARD -j ACCEPT

@@ -1,0 +1,8 @@
+{
+  "name": "@site/utils",
+  "main": "src/index.ts",
+  "version": "1.0.0",
+  "devDependencies": {
+    "@types/node": "^18"
+  }
+}

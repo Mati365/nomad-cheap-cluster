@@ -1,4 +1,5 @@
 import * as path from "path";
+import * as process from "process";
 
 export const resolveDistPath = (file: string = "") =>
-  path.resolve(__dirname, "../dist", file);
+  path.resolve(process.cwd(), "./dist", file);

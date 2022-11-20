@@ -1,15 +1,13 @@
 {
-  "name": "@site/core",
+  "name": "@site/builder",
   "main": "index.ts",
   "version": "1.0.0",
   "devDependencies": {
     "@types/node": "^18"
   },
   "dependencies": {
-    "@pulumi/command": "^0.6.0",
-    "@pulumi/hcloud": "^1.10.1",
     "@pulumi/pulumi": "^3.0.0",
-    "@types/mkdirp": "^1.0.2",
-    "mkdirp": "^1.0.4"
+    "@pulumi/aws": "^5.0.0",
+    "@pulumi/awsx": "^0.40.0"
   }
 }

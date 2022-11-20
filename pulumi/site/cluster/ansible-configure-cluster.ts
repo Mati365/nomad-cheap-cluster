@@ -5,13 +5,14 @@ import * as os from "os";
 import * as pulumi from "@pulumi/pulumi";
 import { local } from "@pulumi/command";
 
-import { AppCluster } from "./create-skeleton-cluster";
 import {
   ensureDirIsEmpty,
   isPortReachable,
   resolveDistPath,
   resolveProjectAnsiblePath,
-} from "../utils";
+} from "@site/utils";
+
+import { AppCluster } from "./create-skeleton-cluster";
 
 type ConfigureClusterConfig = {
   env: string;

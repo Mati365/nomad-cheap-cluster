@@ -1,4 +1,4 @@
-import { readSSHKeys } from "./utils";
+import { readSSHKeys } from "@site/utils";
 import {
   ansibleConfigureCluster,
   createClusterSnapshots,
