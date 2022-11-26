@@ -36,7 +36,7 @@ addresses {
 }
 
 telemetry {
-  statsite_address = "0.0.0.0:3000"
+  statsite_address = "0.0.0.0:{{ addresses.consul.stats_port }}"
 }
 
 acl {

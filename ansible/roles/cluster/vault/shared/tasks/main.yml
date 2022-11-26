@@ -3,18 +3,6 @@
     name: vault
     state: present
 
-- name: Ensure vault group present
-  group:
-    name: vault
-    state: present
-
-- name: Ensure vault user present
-  user:
-    name: vault
-    groups: vault
-    shell: /bin/bash
-    append: yes
-
 - name: Ensure vault dir present
   file:
     path: "{{ vault.remote.root_dir }}"

@@ -33,6 +33,8 @@
   gather_facts: true
   become: true
   roles:
+    - role: cluster/sys
+    - role: cluster/users
     - role: cluster/cni
     - role: cluster/docker/daemon
     - role: cluster/docker/skeleton

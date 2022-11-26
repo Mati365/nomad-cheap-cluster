@@ -52,6 +52,7 @@ export const ansibleConfigureCluster = ({
     addresses:
       server: ${privateNetwork.ipv4.server}
       registry: ${privateNetwork.ipv4.server}
+      nfs_server: ${privateNetwork.ipv4.server}
       consul:
         ip: ${privateNetwork.ipv4.server}
         port: 8500

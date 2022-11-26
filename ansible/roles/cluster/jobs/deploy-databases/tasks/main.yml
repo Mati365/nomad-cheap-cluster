@@ -5,3 +5,4 @@
     job_name: "{{ item }}"
   with_items:
     - postgres
+    - elasticsearch

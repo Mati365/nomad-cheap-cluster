@@ -1,0 +1,41 @@
+- name: Ensure nomad group present
+  group:
+    name: nomad
+    state: present
+
+- name: Ensure nomad has docker group
+  user:
+    name: nomad
+    groups: docker
+    append: yes
+
+- name: Ensure nomad user present
+  user:
+    name: nomad
+    groups: nomad
+    shell: /bin/bash
+    append: yes
+
+- name: Ensure vault group present
+  group:
+    name: vault
+    state: present
+
+- name: Ensure vault user present
+  user:
+    name: vault
+    groups: vault
+    shell: /bin/bash
+    append: yes
+
+- name: Ensure consul group present
+  group:
+    name: consul
+    state: present
+
+- name: Ensure consul user present
+  user:
+    name: consul
+    groups: consul
+    shell: /bin/bash
+    append: yes

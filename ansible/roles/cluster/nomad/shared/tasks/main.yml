@@ -17,24 +17,6 @@
     name: nomad
     state: present
 
-- name: Ensure nomad group present
-  group:
-    name: nomad
-    state: present
-
-- name: Ensure nomad has docker group
-  user:
-    name: nomad
-    groups: docker
-    append: yes
-
-- name: Ensure nomad user present
-  user:
-    name: nomad
-    groups: nomad
-    shell: /bin/bash
-    append: yes
-
 - name: Nomad dir is present
   file:
     path: "{{ nomad.remote.root_dir }}"

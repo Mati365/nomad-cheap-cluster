@@ -7,10 +7,10 @@ job "postgres" {
     value     = "nomad-server"
   }
 
-   update {
+  update {
     max_parallel = 1
     min_healthy_time = "5s"
-    healthy_deadline = "5m"
+    healthy_deadline = "2m"
     auto_revert = false
     canary = 0
   }
@@ -74,11 +74,16 @@ job "postgres" {
           data = <<EOF
             {{ with secret "kv-v2/database/postgres" }}
               POSTGRES_USER={{ .Data.data.user }}
-              POSTGRES_DB={{ .Data.data.db }}
+              POSTGRES_DB={{ .Data.data.database }}
               POSTGRES_PASSWORD={{ .Data.data.password }}
             {{ end }}
           EOF
         {% endraw %}
+      }
+
+      resources {
+        cpu    = 1000
+        memory = 512
       }
     }
   }

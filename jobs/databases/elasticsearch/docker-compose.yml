@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  nomad-postgres:
+    image: {{ addresses.registry }}:5000/nomad-elasticsearch
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      network: host
