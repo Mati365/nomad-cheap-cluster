@@ -8,6 +8,7 @@
   with_items:
     - postgres
     - elasticsearch
+    - docker-registry
 
 - name: Copy nomad-server systemd service
   register: nomad_server_service

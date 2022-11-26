@@ -24,14 +24,23 @@
     name: docker
     state: present
 
-- name: Copy docker config
-  register: docker_config
-  copy:
-    src: daemon.json
+- name: Copy docker daemon config
+  register: docker_daemon_config
+  template:
+    src: daemon.json.j2
     dest: /etc/docker/daemon.json
     owner: root
     group: root
     mode: 0644
+
+- name: Sync user docker config
+  include_tasks: copy-user-docker-config.yml
+  vars:
+    user: "{{ item }}"
+  with_items:
+    - root
+    - deploy
+    - nomad
 
 - name: Copy docker service
   register: docker_service
@@ -43,7 +52,7 @@
     mode: 0644
 
 - name: Restart docker server
-  when: docker_config.changed or docker_service.changed
+  when: docker_daemon_config.changed or docker_service.changed
   command: /bin/true
   notify:
     - Restart docker

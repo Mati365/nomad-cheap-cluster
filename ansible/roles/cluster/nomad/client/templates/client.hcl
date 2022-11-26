@@ -10,8 +10,17 @@ client {
     interface = "{{ cluster_interface }}"
   }
 
+  host_volume "app-data" {
+    path = "{{ nfs.app_data_dir }}"
+    read_only = false
+  }
+
   template {
     disable_file_sandbox = true
+  }
+
+  options   = {
+    "docker.auth.config" = "/root/.docker/config.json"
   }
 }
 

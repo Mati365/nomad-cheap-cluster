@@ -1,0 +1,4 @@
+- name: Ensure that NFS common package is present
+  package:
+    name: nfs-common
+    state: present

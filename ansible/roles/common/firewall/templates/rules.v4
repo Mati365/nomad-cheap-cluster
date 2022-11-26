@@ -4,6 +4,7 @@
 :OUTPUT ACCEPT [0:0]
 :CNI-FORWARD - [0:0]
 :DOCKER-USER - [0:0]
+
 -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 -A INPUT -i lo -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
@@ -13,14 +14,29 @@
 -A INPUT -p tcp --match multiport --dports 80,443,8081 -j ACCEPT
 
 # Nomad
--A INPUT -p tcp --match multiport --dports 4648,4647,4646 -j ACCEPT
--A INPUT -p udp --match multiport --dports 4648 -j ACCEPT
+-A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 4648,4647,4646 -j ACCEPT
+-A INPUT -s {{ cluster_cidr }} -p udp --match multiport --dports 4648 -j ACCEPT
 
 # Consul
--A INPUT -p tcp --match multiport --dports 8600,8500,8301,8302,8300,3000,8200,8201,5432 -j ACCEPT
--A INPUT -p udp --match multiport --dports 8600,8301,8302 -j ACCEPT
+-A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 8600,8500,8301,8302,8300 -j ACCEPT
+-A INPUT -s {{ cluster_cidr }} -p udp --match multiport --dports 8600,8301,8302 -j ACCEPT
 
+# Vault
+-A INPUT -p tcp --match multiport --dports 3000,8200,8201 -j ACCEPT
+
+# DB
+-A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 5432 -j ACCEPT
+
+# Docker registry
+-A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 5000 -j ACCEPT
+
+# NFS
+-A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 111,2049 -j ACCEPT
+-A INPUT -s {{ cluster_cidr }} -p udp --match multiport --dports 111,2049 -j ACCEPT
+
+-A INPUT -j DROP
 -A FORWARD -j ACCEPT
+
 -I DOCKER-USER -i {{ cluster_interface }} -p tcp --dport 5000:32767 -j DROP
 -A DOCKER-USER -j RETURN
 COMMIT

@@ -50,13 +50,13 @@ export const ansibleConfigureCluster = ({
     cluster_cidr: "${privateNetwork.ipv4.subNetworks[0]}"
 
     addresses:
+      server: ${privateNetwork.ipv4.server}
+      registry: ${privateNetwork.ipv4.server}
       consul:
         ip: ${privateNetwork.ipv4.server}
         port: 8500
         dns_port: 8600
         stats_port: 3000
-
-      server: ${privateNetwork.ipv4.server}
   `;
 
   const clusterAvailable = nodes.server.ipv4Address.apply((ip) =>

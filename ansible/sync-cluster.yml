@@ -5,6 +5,9 @@
   roles:
     - role: common/network
 
+    - role: cluster/nfs/shared
+      tags: nfs
+
     - role: cluster/nomad/shared
       tags: nomad
 
@@ -19,6 +22,9 @@
   gather_facts: true
   become: true
   roles:
+    - role: cluster/nfs/server
+      tags: nfs
+
     - role: cluster/consul/server
       tags: consul
 
@@ -33,6 +39,9 @@
   gather_facts: true
   become: true
   roles:
+    - role: cluster/nfs/client
+      tags: nfs
+
     - role: cluster/consul/client
       tags: consul
 

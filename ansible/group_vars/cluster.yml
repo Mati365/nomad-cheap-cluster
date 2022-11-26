@@ -2,6 +2,11 @@ server: front
 
 docker:
   volumes_path: "{{ remote_paths.www }}/volumes"
+  registry:
+    credentials: "{{ lookup('file', local_paths.all_keys + '/docker/registry-credentials.json') | from_json }}"
+
+nfs:
+  app_data_dir: "{{ docker.volumes_path }}/app-data"
 
 all_groups:
   - name: wheel

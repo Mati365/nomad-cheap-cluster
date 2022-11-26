@@ -1,0 +1,7 @@
+{
+  "auths": {
+    "{{ addresses.registry }}:5000": {
+      "auth": "{{ (docker.registry.credentials.login + ':' + docker.registry.credentials.password) | b64encode }}"
+    }
+  }
+}

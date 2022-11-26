@@ -15,6 +15,11 @@ client {
     interface = "{{ cluster_interface }}"
   }
 
+  host_volume "docker-registry-data" {
+    path = "{{ docker.volumes_path }}/docker-registry"
+    read_only = false
+  }
+
   host_volume "postgres-data" {
     path = "{{ docker.volumes_path }}/postgres"
     read_only = false
@@ -25,8 +30,17 @@ client {
     read_only = false
   }
 
+  host_volume "app-data" {
+    path = "{{ nfs.app_data_dir }}"
+    read_only = false
+  }
+
   template {
     disable_file_sandbox = true
+  }
+
+  options   = {
+    "docker.auth.config" = "/root/.docker/config.json"
   }
 }
 

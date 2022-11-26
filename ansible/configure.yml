@@ -27,7 +27,9 @@
     - role: common/www
 
 - hosts: cluster
-  tags: cluster
+  tags:
+    - docker
+    - cluster
   gather_facts: true
   become: true
   roles:

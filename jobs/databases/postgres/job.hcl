@@ -22,7 +22,6 @@ job "postgres" {
       mode = "host"
 
       port "db" {
-        host_network = "internal-cluster-network"
         static = 5432
       }
     }
@@ -38,10 +37,10 @@ job "postgres" {
       port = "db"
 
       check {
-        name = "postgresql_check"
+        name = "postgres-check"
         type = "tcp"
-        interval = "60s"
-        timeout = "5s"
+        interval = "15s"
+        timeout = "3s"
       }
     }
 
@@ -49,8 +48,17 @@ job "postgres" {
       driver = "docker"
 
       vault {
-        env = true
         policies  = ["postgres-policy"]
+      }
+
+      config {
+        image = "{{ addresses.registry }}:5000/nomad-postgres"
+        ports = ["db"]
+        network_mode = "host"
+
+        volumes = [
+          "secrets/db.envs:/etc/db.envs"
+        ]
       }
 
       volume_mount {
@@ -59,31 +67,15 @@ job "postgres" {
         read_only   = false
       }
 
-      env {
-        POSTGRES_USER = "postgres"
-        POSTGRES_PASSWORD = "postgres"
-        POSTGRES_DB = "postgres"
-      }
-
-      config {
-        image = "postgres:15.1"
-        ports = ["db"]
-        network_mode = "host"
-
-        volumes = [
-          "secrets/pass.env:/etc/pass.env"
-        ]
-      }
-
       template {
-        destination = "secrets/pass.env"
+        destination = "secrets/db.envs"
 
         {% raw %}
           data = <<EOF
-            {{ with secret "kv-v2/data/database/postgres" }}
-              POSTGRES_PASSWORD = {{ .Data.password }}
-              POSTGRES_DB =  {{ .Data.db }}
-              POSTGRES_USER = {{ .Data.user }}
+            {{ with secret "kv-v2/database/postgres" }}
+              POSTGRES_USER={{ .Data.data.user }}
+              POSTGRES_DB={{ .Data.data.db }}
+              POSTGRES_PASSWORD={{ .Data.data.password }}
             {{ end }}
           EOF
         {% endraw %}

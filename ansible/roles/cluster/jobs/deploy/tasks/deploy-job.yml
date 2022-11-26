@@ -28,6 +28,40 @@
   with_fileglob:
     - "{{ job_dir }}/*"
 
+- name: Check if template contain docker-compose.yml
+  register: docker_compose_file
+  stat:
+    path: "{{ remote_job_dir }}/docker-compose.yml"
+
+- name: Sync docker
+  when: docker_compose_file.stat.exists
+  block:
+    - name: Ensure docker job dir exists
+      file:
+        path: "{{ remote_job_dir }}/docker"
+        state: directory
+        owner: nomad
+        group: nomad
+        mode: 0700
+
+    - name: Sync all docker files
+      template:
+        src: "{{ file }}"
+        dest: "{{ remote_job_dir }}/docker/"
+        owner: nomad
+        group: nomad
+        mode: 0600
+      loop_control:
+        loop_var: file
+      with_fileglob:
+        - "{{ job_dir }}/docker/*"
+
+    - name: Build and push docker compose
+      shell: |
+        cd {{ remote_job_dir }}/
+        docker compose build --parallel
+        docker compose push
+
 - name: Apply {{ job_name }} to cluster
   become_user: nomad
   shell: |

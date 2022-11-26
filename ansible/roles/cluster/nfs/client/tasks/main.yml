@@ -1,0 +1,15 @@
+- name: Ensure NFS directory is present
+  file:
+    path: "{{ nfs.app_data_dir }}"
+    state: directory
+    mode: 0770
+    owner: deploy
+    group: webusers
+
+- name: Ensure NFS directory is mounted
+  mount:
+    src: "{{ addresses.nfs_server }}:{{ nfs.app_data_dir }}"
+    path: "{{ nfs.app_data_dir }}"
+    fstype: nfs
+    opts: "rw,sync"
+    state: mounted

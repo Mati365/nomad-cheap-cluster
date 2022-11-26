@@ -1,0 +1,27 @@
+- name: Ensure that NFS server is installed
+  package:
+    name: nfs-kernel-server
+    state: present
+
+- name: Ensure NFS app data directory is present
+  file:
+    path: "{{ nfs.app_data_dir }}"
+    state: directory
+    owner: deploy
+    group: webusers
+    mode: 0755
+
+- name: Export all IPs to /etc/exports
+  template:
+    src: exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: 0644
+  notify: Reload NFS
+
+- name: Ensure NFS is running.
+  service:
+    name: nfs-kernel-server
+    state: started
+    enabled: yes

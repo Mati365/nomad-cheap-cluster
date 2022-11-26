@@ -1,0 +1,15 @@
+- name: Ensure user docker config dir exists
+  file:
+    path: "~{{ user }}/.docker/"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0755
+
+- name: Copy docker user config
+  template:
+    src: config.json.j2
+    dest: "~{{ user }}/.docker/config.json"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0644

@@ -6,11 +6,11 @@
     group: nomad
     mode: 0755
 
-- name: Deploy jobs
+- name: Deploy core jobs
   include_tasks: deploy-job.yml
   vars:
-    job_dir: "{{ nomad.local.jobs.root_dir }}/{{ item }}"
+    job_dir: "{{ nomad.local.jobs.root_dir }}/core/{{ item }}"
     job_name: "{{ item }}"
   with_items:
-    - postgres
+    - docker-registry
     - reverse-proxy
