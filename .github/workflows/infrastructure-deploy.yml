@@ -39,6 +39,11 @@ jobs:
           rm -rf keys/*
           tar -zxf keys.tar -C ./keys
 
+      - name: Install ansible and dependencies
+        run:
+          apt-get update
+          apt-get install ansible
+
       - name: Install pulumi dependencies
         working-directory: pulumi/hetzner/nomad-cluster
         run: yarn install --frozen-lockfile
