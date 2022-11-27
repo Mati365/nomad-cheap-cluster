@@ -45,9 +45,9 @@ jobs:
 
       - name: Pulumi deploy configuration
         uses: pulumi/actions@v3
-        working-directory: pulumi/hetzner/nomad-cluster
         with:
           command: up
           stack-name: prod
+          work-dir: pulumi/hetzner/nomad-cluster
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_TOKEN }}
