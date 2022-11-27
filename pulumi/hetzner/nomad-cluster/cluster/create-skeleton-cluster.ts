@@ -75,6 +75,7 @@ export const createSkeletonCluster = ({
       return {
         server: new hcloud.Server("nomad-server", {
           ...serverConfig,
+          deleteProtection: true,
           serverType: "cx21",
           userData: getUserData({
             internalNetworkCardName: genInternalNetworkCardName("cx21"),
@@ -89,6 +90,7 @@ export const createSkeletonCluster = ({
 
         client: new hcloud.Server("nomad-client", {
           ...serverConfig,
+          deleteProtection: true,
           serverType: "cpx11",
           userData: getUserData({
             internalNetworkCardName: genInternalNetworkCardName("cpx11"),
