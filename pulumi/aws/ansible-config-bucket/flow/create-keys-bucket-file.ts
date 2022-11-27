@@ -15,14 +15,12 @@ export const createKeysBucketFile = ({ configBucket }: KeysBucketFileAttrs) => {
     destFileName: "ansible-keys",
   });
 
-  return pulumi.all([archive]).apply(
-    ([{ archivePath, fileName }]) => {
-      assertFileSize(/* 1MB */ 1024, archivePath);
+  return pulumi.all([archive]).apply(([{ archivePath, fileName }]) => {
+    assertFileSize(/* 1MB */ 1024, archivePath);
 
-      return new aws.s3.BucketObject(fileName, {
-        bucket: configBucket,
-        source: new pulumi.asset.FileAsset(archivePath),
-      });
-    },
-  );
+    return new aws.s3.BucketObject(fileName, {
+      bucket: configBucket,
+      source: new pulumi.asset.FileAsset(archivePath),
+    });
+  });
 };
