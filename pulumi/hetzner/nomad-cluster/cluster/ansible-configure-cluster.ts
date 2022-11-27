@@ -85,7 +85,7 @@ export const ansibleConfigureCluster = ({
         `cd ${ansiblePath}; ansible-playbook ${playbookPath} -i ${inventoryHostsPath}`
       );
 
-      return new local.Command("Ansible sync config", {
+      return new local.Command(`Ansible sync config (ver: ${Date.now()})`, {
         create:
           clusterAvailable && !force
             ? "/bin/true"
