@@ -1,6 +1,5 @@
 import * as path from "path";
 import * as fs from "fs";
-import * as os from "os";
 
 import * as pulumi from "@pulumi/pulumi";
 import { local } from "@pulumi/command";
@@ -65,8 +64,8 @@ export const ansibleConfigureCluster = ({
   );
 
   return pulumi
-    .all([inventory, groupVars, allIpv4, clusterAvailable])
-    .apply(([inventory, groupVars, allIpv4, clusterAvailable]) => {
+    .all([inventory, groupVars, clusterAvailable])
+    .apply(([inventory, groupVars, clusterAvailable]) => {
       const resolveInventoryPath = (file: string = "") =>
         resolveDistPath(path.join("ansible", "inventory", file));
 
@@ -81,27 +80,16 @@ export const ansibleConfigureCluster = ({
 
       const ansiblePath = resolveProjectAnsiblePath();
       const playbookPath = resolveProjectAnsiblePath("configure.yml");
-      const keyscanHosts = allIpv4.map(
-        (ip) =>
-          new local.Command(`Keyscan keys ${ip}`, {
-            create: `sleep 4; ssh-keygen -f "${os.homedir()}/.ssh/known_hosts" -R "${ip}" 2>/dev/null `,
-          })
-      );
 
       console.info(
         `cd ${ansiblePath}; ansible-playbook ${playbookPath} -i ${inventoryHostsPath}`
       );
 
-      return new local.Command(
-        "Ansible sync config",
-        {
-          create: clusterAvailable && !force
+      return new local.Command("Ansible sync config", {
+        create:
+          clusterAvailable && !force
             ? "/bin/true"
             : `cd ${ansiblePath}; ansible-playbook ${playbookPath} -i ${inventoryHostsPath}`,
-        },
-        {
-          dependsOn: keyscanHosts,
-        }
-      );
+      });
     });
 };
