@@ -18,13 +18,24 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
           cache-dependency-path: '**/yarn.lock'
 
+      - name: Fetch config from S3 AWS
+        uses: keithweaver/aws-s3-github-action@v1.0.0
+        with:
+          command: download
+          source: ${{ secrets.AWS_CONFIG_BUCKET_FILE_URL }}
+          destination: ./keys.tar
+          aws_access_key_id: ${{ secrets.AWS_CONFIG_BUCKET_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_CONFIG_BUCKET_ACCESS_KEY }}
+          aws_region: eu-central-1
+
       - name: Install pulumi dependencies
         working-directory: pulumi/hetzner/nomad-cluster
-        run: yarn ci
+        run: yarn install --frozen-lockfile
+
+      - run: ls -lha
