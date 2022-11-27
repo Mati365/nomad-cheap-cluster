@@ -18,9 +18,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - run: ls -lha
+
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
-          cache-dependency-path: pulumi/hetzner/nomad-cluster/yarn.lock
+
+      - name: Install pulumi dependencies
+        working-directory: pulumi/hetzner/nomad-cluster
+        run: yarn ci
