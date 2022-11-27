@@ -1,6 +1,6 @@
 [Unit]
 Description="Consul node service"
-Requires=network-online.target
+Requires=network-online.target docker.service
 After=network-online.target
 ConditionFileNotEmpty={{ consul.remote.client.root_dir }}/node.hcl
 StartLimitBurst=1

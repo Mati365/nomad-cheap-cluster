@@ -3,6 +3,7 @@ Description=Nomad server
 Documentation=https://www.nomadproject.io/docs/
 Wants=network-online.target
 After=network-online.target
+Requires=docker.service
 
 [Service]
 User=root

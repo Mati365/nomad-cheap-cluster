@@ -1,6 +1,6 @@
 [Unit]
 Description=Vault Agent
-Requires=consul-server.service
+Requires=consul-server.service docker.service
 After=consul-server.service
 
 [Service]

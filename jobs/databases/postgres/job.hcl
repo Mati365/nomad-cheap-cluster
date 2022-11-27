@@ -82,7 +82,7 @@ job "postgres" {
       }
 
       resources {
-        cpu    = 1000
+        cpu    = 1200
         memory = 512
       }
     }

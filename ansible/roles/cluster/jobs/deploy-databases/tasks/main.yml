@@ -1,8 +1,0 @@
-- name: Deploy databases jobs
-  include_tasks: roles/cluster/jobs/deploy/tasks/deploy-job.yml
-  vars:
-    job_dir: "{{ nomad.local.jobs.root_dir }}/databases/{{ item }}"
-    job_name: "{{ item }}"
-  with_items:
-    - postgres
-    - elasticsearch

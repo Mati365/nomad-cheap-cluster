@@ -33,6 +33,9 @@
 # Elasticsearch
 -A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 9200,9300 -j ACCEPT
 
+# Redis
+-A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 6379 -j ACCEPT
+
 # NFS
 -A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 111,2049 -j ACCEPT
 -A INPUT -s {{ cluster_cidr }} -p udp --match multiport --dports 111,2049 -j ACCEPT

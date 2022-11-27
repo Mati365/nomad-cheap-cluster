@@ -20,3 +20,5 @@ node_modules/
 dist/
 tmp/
 keys/docker/*-credentials.json
+keys/vault/backup/*.snap
+keys/vault/backup/*.json

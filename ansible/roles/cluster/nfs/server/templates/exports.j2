@@ -1,1 +1,1 @@
-{{ nfs.app_data_dir }} *(rw,no_root_squash,no_subtree_check)
+{{ nfs.app_data_dir }} {{ cluster_cidr }}(rw,no_root_squash,no_subtree_check)

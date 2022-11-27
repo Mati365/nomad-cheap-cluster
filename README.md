@@ -48,6 +48,12 @@ sudo nomad job stop -purge \
   <job name>
 ```
 
+Take vault snapshot:
+
+```bash
+VAULT_TOKEN=<token> vault operator raft snapshot save -tls-skip-verify ./snapshot.snap
+```
+
 ### Consul
 
 ```bash

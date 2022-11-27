@@ -84,6 +84,7 @@ vault:
   local:
     server:
       policies_dir: "{{ local_paths.all_keys }}/vault/policies"
+      backup_dir: "{{ local_paths.all_keys }}/vault/backup"
 
       tls:
         ca_dir: "{{ local_paths.all_keys }}/vault/tls/ca"

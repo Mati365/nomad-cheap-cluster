@@ -112,15 +112,7 @@
       chmod 0600 {{ vault.remote.server.tokens_dir }}/root-keys.json
     fi
 
-- name: Unseal vault
-  include_tasks: vault-unseal.yml
-
-- name: Sync policy
-  include_tasks: sync-policy.yml
-  vars:
-    file_path: "{{ item }}"
-  with_fileglob:
-    - "{{ vault.local.server.policies_dir }}/*.hcl"
+- include_tasks: vault-unseal.yml
 
 - name: Ensure KV2 store enabled
   shell:
@@ -129,3 +121,12 @@
     if [ "$key_present" = "false" ]; then
       VAULT_TOKEN={{ vault_root_token }} vault secrets enable -tls-skip-verify kv-v2 ;
     fi
+
+- include_tasks: restore-snapshot.yml
+
+- name: Sync policy
+  include_tasks: sync-policy.yml
+  vars:
+    file_path: "{{ item }}"
+  with_fileglob:
+    - "{{ vault.local.server.policies_dir }}/*.hcl"

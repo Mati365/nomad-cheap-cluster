@@ -1,0 +1,50 @@
+- name: Read root vault key
+  include_tasks: read-root-key.yml
+  when: vault_root_token is not defined
+
+- name: Check if snapshot exists on local machine
+  become: false
+  delegate_to: localhost
+  stat:
+    path: "{{ vault.local.server.backup_dir }}/snapshot.snap"
+  register: vault_snapshot_file
+
+- name: Check if vault is empty
+  register: vault_total_keys
+  shell: |
+    VAULT_TOKEN={{ vault_root_token }} vault kv list -tls-skip-verify -format=json kv-v2/ | jq length
+
+- name: Restore backup when vault is empty and snapshot exists
+  when: vault_snapshot_file.stat.exists and vault_total_keys.stdout == "0"
+  block:
+    - name: Copy snapshot file
+      copy:
+        src: "{{ vault.local.server.backup_dir }}/snapshot.snap"
+        dest: "{{ vault.remote.root_dir }}/"
+        owner: vault
+        group: vault
+        mode: 0600
+
+    - name: Copy root-keys.json file
+      copy:
+        src: "{{ vault.local.server.backup_dir }}/root-keys.json"
+        dest: "{{ vault.remote.server.tokens_dir }}/"
+        owner: vault
+        group: vault
+        mode: 0600
+
+    - name: Restore snapshot file
+      shell: |
+        VAULT_TOKEN={{ vault_root_token }} vault operator raft snapshot restore \
+          -tls-skip-verify -force \
+          {{ vault.remote.root_dir }}/snapshot.snap
+
+    - name: Check if backup is restored
+      shell: vault status -tls-skip-verify -format=json | jq -r '.sealed'
+      register: backup_restored
+      until: backup_restored.stdout == 'true'
+      retries: 6
+      delay: 1
+
+    - include_tasks: read-root-key.yml
+    - include_tasks: vault-unseal.yml
