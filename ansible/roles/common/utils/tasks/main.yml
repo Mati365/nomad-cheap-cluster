@@ -19,3 +19,4 @@
       - rsync
       - dnsutils
       - telnet
+      - postgresql-client
