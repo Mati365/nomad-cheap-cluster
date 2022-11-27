@@ -46,7 +46,7 @@ jobs:
       - name: Pulumi deploy configuration
         uses: pulumi/actions@v3
         with:
-          command: up
+          command: plan
           stack-name: prod
           work-dir: pulumi/hetzner/nomad-cluster
         env:
