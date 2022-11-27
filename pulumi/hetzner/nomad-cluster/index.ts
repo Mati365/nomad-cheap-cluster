@@ -2,7 +2,6 @@ import { readSSHKeys } from "@infra/shared";
 import { ansibleConfigureCluster, createSkeletonCluster } from "./cluster";
 
 const sshKeys = readSSHKeys({
-  default: "~/.ssh/id_rsa.pub",
   ansible: "ansible/id_rsa.pub",
 });
 
