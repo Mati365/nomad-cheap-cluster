@@ -27,7 +27,7 @@ jobs:
       - name: Fetch config from S3 AWS
         uses: keithweaver/aws-s3-github-action@v1.0.0
         with:
-          command: download
+          command: cp
           source: ${{ secrets.AWS_CONFIG_BUCKET_FILE_URL }}
           destination: ./keys.tar
           aws_access_key_id: ${{ secrets.AWS_CONFIG_BUCKET_KEY_ID }}
