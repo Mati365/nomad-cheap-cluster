@@ -23,6 +23,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
+          cache-dependency-path: pulumi/hetzner/nomad-cluster/yarn.lock
 
       - name: Install pulumi dependencies
         working-directory: pulumi/hetzner/nomad-cluster
