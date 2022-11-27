@@ -51,3 +51,4 @@ jobs:
           work-dir: pulumi/hetzner/nomad-cluster
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_TOKEN }}
+          HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
