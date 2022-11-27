@@ -34,8 +34,12 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_CONFIG_BUCKET_ACCESS_KEY }}
           aws_region: eu-central-1
 
+      - name: Extract ansible config
+        run: |
+          rm -rf keys/*
+          tar -zxvf keys.tar -C ./keys
+
       - name: Install pulumi dependencies
         working-directory: pulumi/hetzner/nomad-cluster
         run: yarn install --frozen-lockfile
 
-      - run: ls -lha
