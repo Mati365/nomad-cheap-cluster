@@ -37,9 +37,17 @@ jobs:
       - name: Extract ansible config
         run: |
           rm -rf keys/*
-          tar -zxvf keys.tar -C ./keys
+          tar -zxf keys.tar -C ./keys
 
       - name: Install pulumi dependencies
         working-directory: pulumi/hetzner/nomad-cluster
         run: yarn install --frozen-lockfile
 
+      - name: Pulumi deploy configuration
+        uses: pulumi/actions@v3
+        working-directory: pulumi/hetzner/nomad-cluster
+        with:
+          command: up
+          stack-name: prod
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_TOKEN }}
