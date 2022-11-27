@@ -22,4 +22,4 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
-          cache-dependency-path: ./pulumi/hetzner/nomad-cluster/yarn.lock
+          cache-dependency-path: $GITHUB_WORKSPACE/pulumi/hetzner/nomad-cluster/yarn.lock
