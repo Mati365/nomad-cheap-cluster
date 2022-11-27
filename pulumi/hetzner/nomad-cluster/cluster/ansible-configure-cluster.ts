@@ -84,7 +84,7 @@ export const ansibleConfigureCluster = ({
       const keyscanHosts = allIpv4.map(
         (ip) =>
           new local.Command(`Keyscan keys ${ip}`, {
-            create: `sleep 4; ssh-keygen -f "${os.homedir()}/.ssh/known_hosts" -R "${ip}"`,
+            create: `sleep 4; ssh-keygen -f "${os.homedir()}/.ssh/known_hosts" -R "${ip}" 2>/dev/null `,
           })
       );
 

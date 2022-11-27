@@ -1,9 +1,5 @@
 import { readSSHKeys } from "@infra/shared";
-import {
-  ansibleConfigureCluster,
-  createClusterSnapshots,
-  createSkeletonCluster,
-} from "./cluster";
+import { ansibleConfigureCluster, createSkeletonCluster } from "./cluster";
 
 const sshKeys = readSSHKeys({
   default: "~/.ssh/id_rsa.pub",
@@ -38,6 +34,4 @@ const cluster = createSkeletonCluster({
   `.trim(),
 });
 
-ansibleConfigureCluster({ env: "prod", cluster }).apply(() =>
-  createClusterSnapshots({ cluster })
-);
+ansibleConfigureCluster({ env: "prod", cluster, force: true });

@@ -6,13 +6,13 @@ type CiConfigUserAttrs = {
 };
 
 export const createConfigCiUser = ({ configBucket }: CiConfigUserAttrs) => {
-  const user = new aws.iam.User("upolujksiazke-ci");
+  const user = new aws.iam.User("ci");
 
-  const accessKey = new aws.iam.AccessKey("upolujksiazke-ci-user", {
+  const accessKey = new aws.iam.AccessKey("ci-user", {
     user: user.name,
   });
 
-  const policy = new aws.iam.UserPolicy("upolujksiazke-ci-policy", {
+  const policy = new aws.iam.UserPolicy("ci-policy", {
     user: user.name,
     policy: configBucket.id.apply((id) =>
       JSON.stringify({

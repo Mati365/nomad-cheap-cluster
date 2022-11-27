@@ -1,0 +1,25 @@
+name: Full infrastructure deploy
+
+on:
+  push:
+    branches: [production]
+
+concurrency:
+  group: 'infrastructure-deploy'
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3.5
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: ./pulumi/hetzner/nomad-cluster/yarn.lock
