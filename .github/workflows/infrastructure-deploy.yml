@@ -18,6 +18,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - run: ls -lha
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
