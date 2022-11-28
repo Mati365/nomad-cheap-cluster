@@ -1,6 +1,7 @@
 job "elasticsearch" {
   datacenters = ["dc1"]
   type = "service"
+  priority = 100
 
   constraint {
     attribute = "${node.unique.name}"

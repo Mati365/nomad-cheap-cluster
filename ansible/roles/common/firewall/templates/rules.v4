@@ -13,6 +13,10 @@
 # Shared
 -A INPUT -p tcp --match multiport --dports 80,443,8081 -j ACCEPT
 
+# DNS
+-A INPUT -p tcp --match multiport --dports 53 -j ACCEPT
+-A INPUT -p udp --match multiport --dports 53 -j ACCEPT
+
 # Nomad
 -A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 4648,4647,4646 -j ACCEPT
 -A INPUT -s {{ cluster_cidr }} -p udp --match multiport --dports 4648 -j ACCEPT
@@ -39,6 +43,10 @@
 # NFS
 -A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 111,2049 -j ACCEPT
 -A INPUT -s {{ cluster_cidr }} -p udp --match multiport --dports 111,2049 -j ACCEPT
+
+# CNI
+-A INPUT -p tcp -s 172.26.64.0/20 -j ACCEPT
+-A INPUT -p udp -s 172.26.64.0/20 -j ACCEPT
 
 -A INPUT -j DROP
 -A FORWARD -j ACCEPT

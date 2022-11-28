@@ -24,11 +24,6 @@ export const ansibleConfigureCluster = ({
   force,
   cluster: { nodes, privateNetwork },
 }: ConfigureClusterConfig) => {
-  const allIpv4 = pulumi.all([
-    nodes.server.ipv4Address,
-    nodes.client.ipv4Address,
-  ]);
-
   const inventory = pulumi.interpolate`
     [server]
     ${nodes.server.ipv4Address}
@@ -52,6 +47,7 @@ export const ansibleConfigureCluster = ({
       server: ${privateNetwork.ipv4.server}
       registry: ${privateNetwork.ipv4.server}
       nfs_server: ${privateNetwork.ipv4.server}
+      dns_server: ${privateNetwork.ipv4.server}
       consul:
         ip: ${privateNetwork.ipv4.server}
         port: 8500

@@ -5,6 +5,7 @@ addresses:
     dns_port: 8600
     stats_port: 3000
 
+  dns_server: 192.168.56.10
   server: 192.168.56.10
   registry: 192.168.56.10
   nfs_server: 192.168.56.10

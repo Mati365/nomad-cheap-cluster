@@ -1,6 +1,7 @@
 job "cache" {
   datacenters = ["dc1"]
   type = "service"
+  priority = 80
 
   constraint {
     attribute = "${node.unique.name}"
