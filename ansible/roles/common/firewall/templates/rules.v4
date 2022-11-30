@@ -32,7 +32,7 @@
 -A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 5432 -j ACCEPT
 
 # Docker registry
--A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 5000 -j ACCEPT
+-A INPUT -p tcp --match multiport --dports 5000 -j ACCEPT
 
 # Elasticsearch
 -A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 9200,9300 -j ACCEPT
