@@ -35,7 +35,7 @@ export const createSkeletonCluster = ({
         protocol: "icmp",
         sourceIps: ["0.0.0.0/0", "::/0"],
       },
-      ...createFirewallRuleForPorts([22, 80, 443, 8200, 5000], {
+      ...createFirewallRuleForPorts([22, 80, 443, 8200, 8081, 5000], {
         direction: "in",
         sourceIps: ["0.0.0.0/0", "::/0"],
         protocol: "tcp",
