@@ -6,6 +6,14 @@
     group: nomad
     mode: 0755
 
+- name: Grant deployusers to read and write to jobs dir
+  ansible.posix.acl:
+    path: "{{ nomad.remote.jobs.root_dir }}"
+    entity: deployusers
+    etype: group
+    permissions: rwx
+    state: present
+
 - name: Deploy core jobs
   include_tasks: deploy-job.yml
   vars:
