@@ -36,6 +36,18 @@ job "docker-registry" {
       name = "docker-registry"
       port = "http"
 
+      tags = [
+        "traefik.enable=true",
+        "traefik.http.routers.registry.rule=Host(`registry.{{ cluster_hostname }}`)",
+        "traefik.http.routers.registry.entrypoints=http,https",
+        "traefik.http.services.registry.loadbalancer.server.port=5000",
+{% if env != 'dev' %}
+        "traefik.http.routers.registry.tls=true",
+        "traefik.http.routers.registry.tls.certresolver=https-resolver",
+        "traefik.http.routers.registry.tls.domains[0].main=registry.{{ cluster_hostname }}"
+{% endif %}
+      ]
+
       check {
         name = "docker-registry-check"
         type = "tcp"
