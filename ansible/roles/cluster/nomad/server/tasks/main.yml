@@ -131,4 +131,4 @@
     fi
 
     # Allow deploy users to read token.key
-    setfacl -Rm g:deployusers:r {{ nomad.remote.server.root_dir }}/bootstrap.json
+    setfacl -Rm g:deployusers:r {{ nomad.remote.server.root_dir }}/bootstrap.json {{ nomad.remote.server.root_dir }}/token.key
