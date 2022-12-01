@@ -56,7 +56,7 @@ job "reverse-proxy" {
       driver = "docker"
 
       config {
-        image = "traefik:v2.2"
+        image = "traefik:v2.9.5"
         network_mode = "host"
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
