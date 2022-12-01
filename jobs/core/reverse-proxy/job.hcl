@@ -35,6 +35,7 @@ job "reverse-proxy" {
         "traefik.enable=true",
         "traefik.http.routers.traefik.rule=Host(`traefik.{{ cluster_hostname }}`)",
         "traefik.http.routers.traefik.entrypoints=http,https",
+        "traefik.http.services.traefik.loadbalancer.server.port=8081",
 {% if env != 'dev' %}
         "traefik.http.routers.traefik.tls=true",
         "traefik.http.routers.traefik.tls.certresolver=https-resolver",
