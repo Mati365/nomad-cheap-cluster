@@ -1,9 +1,25 @@
 [log]
 level = "debug"
 
+{% if env != 'dev' %}
+[certificatesresolvers]
+   [certificatesresolvers.https-resolver.acme]
+    email = "cziken58@gmail.com"
+    storage= "/letsencrypt/acme.json"
+      [certificatesresolvers.https-resolver.acme.httpchallenge]
+      entryPoint = "http"
+{% endif %}
+
 [entryPoints]
   [entryPoints.http]
   address = ":80"
+{% if env != 'dev' %}
+  [entryPoints.http.http.redirections]
+    [entryPoints.http.http.redirections.entryPoint]
+      to = "https"
+      scheme = "https"
+{% endif %}
+
   [entryPoints.https]
   address = ":443"
   [entryPoints.traefik]

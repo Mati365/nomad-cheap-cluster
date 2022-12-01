@@ -10,6 +10,12 @@ job "reverse-proxy" {
   group "reverse-proxy" {
     count = 1
 
+    volume "app-data" {
+      type      = "host"
+      source    = "app-data"
+      read_only = false
+    }
+
     network {
       mode = "host"
 
@@ -24,6 +30,17 @@ job "reverse-proxy" {
 
     service {
       name = "traefik"
+
+      tags = [
+        "traefik.enable=true",
+        "traefik.http.routers.traefik.rule=Host(`traefik.{{ cluster_hostname }}`)",
+        "traefik.http.routers.traefik.entrypoints=http,https",
+{% if env != 'dev' %}
+        "traefik.http.routers.traefik.tls=true",
+        "traefik.http.routers.traefik.tls.certresolver=https-resolver",
+        "traefik.http.routers.traefik.tls.domains[0].main=traefik.{{ cluster_hostname }}"
+{% endif %}
+      ]
 
       check {
         type     = "http"
@@ -43,6 +60,12 @@ job "reverse-proxy" {
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml",
         ]
+      }
+
+      volume_mount {
+        volume      = "app-data"
+        destination = "/letsencrypt"
+        read_only   = false
       }
 
       template {

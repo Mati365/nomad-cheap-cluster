@@ -1,5 +1,7 @@
 server: front
 
+cluster_hostname: upolujksiazke.pl
+
 docker:
   volumes_path: "{{ remote_paths.www }}/volumes"
   registry:
