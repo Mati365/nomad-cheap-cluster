@@ -129,3 +129,6 @@
       chown nomad:nomad {{ nomad.remote.server.root_dir }}/bootstrap.json
       chmod 0600 {{ nomad.remote.server.root_dir }}/bootstrap.json
     fi
+
+    # Allow deploy users to read token.key
+    setfacl -Rm g:deployusers:r {{ nomad.remote.server.root_dir }}/bootstrap.json

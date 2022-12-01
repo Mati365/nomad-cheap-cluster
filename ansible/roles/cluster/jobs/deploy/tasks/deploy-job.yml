@@ -42,8 +42,8 @@
   shell: |
     nomad job run \
       -address=https://localhost:4646 \
-      -ca-path=/var/www/nomad/tls/nomad-ca.pem \
-      -client-cert=/var/www/nomad/tls/server.pem \
-      -client-key=/var/www/nomad/tls/server-key.pem \
-      -token=$(jq -r '.SecretID' /var/www/nomad/server/bootstrap.json) \
+      -ca-path={{ nomad.remote.tls_dir }}/nomad-ca.pem \
+      -client-cert={{ nomad.remote.tls_dir }}/server.pem \
+      -client-key={{ nomad.remote.tls_dir }}/server-key.pem \
+      -token=$(jq -r '.SecretID' {{ nomad.remote.server.root_dir }}/bootstrap.json) \
       {{ nomad.remote.jobs.root_dir + '/' + job_name + '/job.hcl' }}
