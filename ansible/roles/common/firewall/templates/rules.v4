@@ -18,7 +18,8 @@
 -A INPUT -p udp --match multiport --dports 53 -j ACCEPT
 
 # Nomad
--A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 4648,4647,4646 -j ACCEPT
+-A INPUT -p tcp --match multiport --dports 4646 -j ACCEPT
+-A INPUT -s {{ cluster_cidr }} -p tcp --match multiport --dports 4648,4647 -j ACCEPT
 -A INPUT -s {{ cluster_cidr }} -p udp --match multiport --dports 4648 -j ACCEPT
 
 # Consul
