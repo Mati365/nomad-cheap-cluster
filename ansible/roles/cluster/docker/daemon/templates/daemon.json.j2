@@ -8,6 +8,7 @@
     "buildkit": true
   },
   "insecure-registries": [
-    "{{ addresses.registry }}:5000"
+    "{{ addresses.registry }}:5000",
+    "docker-registry.service.consul:5000"
   ]
 }
