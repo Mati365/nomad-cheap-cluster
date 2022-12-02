@@ -130,5 +130,12 @@
       chmod 0600 {{ nomad.remote.server.root_dir }}/bootstrap.json
     fi
 
-    # Allow deploy users to read token.key
+- name: Ensure deployment user has permissions to required files
+  args:
+    executable: /bin/bash
+  shell: |
+    # Tokens
     setfacl -Rm g:deployusers:r {{ nomad.remote.server.root_dir }}/bootstrap.json {{ nomad.remote.server.root_dir }}/token.key
+
+    # TLS
+    setfacl -m g:deployusers:r {{ nomad.remote.tls_dir }}/*

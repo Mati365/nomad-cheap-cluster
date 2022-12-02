@@ -48,6 +48,19 @@ sudo nomad job stop -purge \
   <job name>
 ```
 
+Fail deployment:
+
+```bash
+sudo nomad deployment fail \
+  -address=https://localhost:4646 \
+  -ca-path=/var/www/nomad/tls/nomad-ca.pem \
+  -client-cert=/var/www/nomad/tls/server.pem \
+  -client-key=/var/www/nomad/tls/server-key.pem \
+  -token=$(sudo jq -r '.SecretID' /var/www/nomad/server/bootstrap.json) \
+  <deployment id>
+
+```
+
 Take vault snapshot:
 
 ```bash
