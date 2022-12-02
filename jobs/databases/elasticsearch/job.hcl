@@ -24,10 +24,12 @@ job "elasticsearch" {
 
       port "db" {
         static = 9200
+        host_network = "internal-cluster-network"
       }
 
       port "api" {
         static = 9300
+        host_network = "internal-cluster-network"
       }
     }
 

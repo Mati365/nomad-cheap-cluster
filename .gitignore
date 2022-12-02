@@ -7,6 +7,7 @@ ansible/inventory/prod
 ansible/keys/nomad/*.key
 ansible/keys/nomad/tls/ca/*[.pem, .csr]
 ansible/keys/nomad/tls/*/*[.pem, .csr]
+*.p12
 
 ansible/keys/consul/*.key
 ansible/keys/consul/tls/*/*.pem

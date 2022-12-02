@@ -23,6 +23,7 @@ job "docker-registry" {
 
       port "http" {
         static = 5000
+        host_network = "internal-cluster-network"
       }
     }
 

@@ -24,6 +24,7 @@ job "postgres" {
 
       port "db" {
         static = 5432
+        host_network = "internal-cluster-network"
       }
     }
 
