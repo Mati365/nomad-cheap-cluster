@@ -87,7 +87,7 @@ export const createSkeletonCluster = ({
           ],
         }, { protect: true }),
 
-        client: new hcloud.Server("nomad-client", {
+        client: new hcloud.Server("nomad-worker", {
           ...serverConfig,
           serverType: "cpx11",
           userData: getUserData({
@@ -99,7 +99,7 @@ export const createSkeletonCluster = ({
               ip: privateNetwork.ipv4.client,
             },
           ],
-        }, { protect: true }),
+        }),
       };
     });
 
