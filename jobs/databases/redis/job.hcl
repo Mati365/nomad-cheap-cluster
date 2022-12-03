@@ -24,6 +24,7 @@ job "cache" {
 
       port "db" {
         static = 6379
+        host_network = "internal-cluster-network"
       }
     }
 
