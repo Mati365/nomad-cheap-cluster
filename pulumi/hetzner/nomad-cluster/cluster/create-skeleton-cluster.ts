@@ -99,7 +99,7 @@ export const createSkeletonCluster = ({
               ip: privateNetwork.ipv4.client,
             },
           ],
-        }),
+        }, { protect: true }),
       };
     });
 
