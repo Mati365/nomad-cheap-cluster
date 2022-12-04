@@ -40,6 +40,11 @@ graph TD
         C[Nomad client] -.-> D
         D[Consul agent]
     end
+
+    subgraph "Client X (192.168.56.X)"
+        E[Nomad client] -.-> F
+        F[Consul agent]
+    end
 ```
 
 ## Local testing
