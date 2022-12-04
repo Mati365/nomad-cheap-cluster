@@ -18,7 +18,7 @@ Default preinstalled software:
 - Postgresql
 - Traefik
 - Node
-- 
+
 ## Local testing
 
 Generate ansible RSA key in `ansible/keys/ansible/` and then:
