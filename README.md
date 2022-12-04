@@ -20,7 +20,7 @@ Default preinstalled software:
 
 Example application that is connected to this cloud:
 
-<https://github.com/upolujksiazke-pl/upolujksiazke.pl>
+<https://github.com/Mati365/upolujksiazke.pl>
 
 check `jobs/` folder with Nomad tasks / services.
 
