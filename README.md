@@ -17,6 +17,7 @@ Default preinstalled software:
 - ElasticSearch 7.x
 - Postgresql
 - Traefik
+- Node
 - 
 ## Local testing
 
