@@ -1,7 +1,23 @@
-# infrastructure
+# cheap-cloud
 
-Site VPS server configuration
+This repo is an example of low-cost cloud infrastructure, with the entire cost of maintenance settling around $10 per month. The project uses the "infrastructure as a code" methodology for doing deployments and allows you to deploy Node based applications with dynamic staging environments.  
 
+Technologies used:
+
+- Nomad 
+- Consul
+- Vault
+- Ansible
+- Vagrant
+- Pulumi 
+- Docker
+
+Default preinstalled software:
+- Redis
+- ElasticSearch 7.x
+- Postgresql
+- Traefik
+- 
 ## Local testing
 
 Generate ansible RSA key in `ansible/keys/ansible/` and then:
@@ -22,7 +38,7 @@ sudo nomad server members \
   -ca-path=/var/www/nomad/tls/nomad-ca.pem \
   -client-cert=/var/www/nomad/tls/server.pem \
   -client-key=/var/www/nomad/tls/server-key.pem \
-  -token=$(sudo jq -r '.SecretID' /var/www/nomad/server/bootstrap.json)
+  -token=$(jq -r '.SecretID' /var/www/nomad/server/bootstrap.json)
 ```
 
 List node members:
@@ -33,7 +49,7 @@ sudo nomad node status \
   -ca-path=/var/www/nomad/tls/nomad-ca.pem \
   -client-cert=/var/www/nomad/tls/server.pem \
   -client-key=/var/www/nomad/tls/server-key.pem \
-  -token=$(sudo jq -r '.SecretID' /var/www/nomad/server/bootstrap.json)
+  -token=$(jq -r '.SecretID' /var/www/nomad/server/bootstrap.json)
 ```
 
 Purge job:
@@ -44,7 +60,7 @@ sudo nomad job stop -purge \
   -ca-path=/var/www/nomad/tls/nomad-ca.pem \
   -client-cert=/var/www/nomad/tls/server.pem \
   -client-key=/var/www/nomad/tls/server-key.pem \
-  -token=$(sudo jq -r '.SecretID' /var/www/nomad/server/bootstrap.json) \
+  -token=$(jq -r '.SecretID' /var/www/nomad/server/bootstrap.json) \
   <job name>
 ```
 
@@ -56,7 +72,7 @@ sudo nomad deployment fail \
   -ca-path=/var/www/nomad/tls/nomad-ca.pem \
   -client-cert=/var/www/nomad/tls/server.pem \
   -client-key=/var/www/nomad/tls/server-key.pem \
-  -token=$(sudo jq -r '.SecretID' /var/www/nomad/server/bootstrap.json) \
+  -token=$(jq -r '.SecretID' /var/www/nomad/server/bootstrap.json) \
   <deployment id>
 
 ```
@@ -70,7 +86,7 @@ VAULT_TOKEN=<token> vault operator raft snapshot save -tls-skip-verify ./snapsho
 ### Consul
 
 ```bash
-consul members -token=$(sudo cat /var/www/consul/tokens/bootstrap.key)
+consul members -token=$(cat /var/www/consul/tokens/bootstrap.key)
 ```
 
 ## License
