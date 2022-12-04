@@ -2,7 +2,7 @@
 
 This repo is an example of low-cost cloud infrastructure, with the entire cost of maintenance settling around $10 per month. The project uses the "infrastructure as a code" methodology for doing deployments and allows you to deploy Node based applications with dynamic staging environments.
 
-Technologies used:
+Default preinstalled software:
 
 - Nomad
 - Consul
@@ -11,20 +11,36 @@ Technologies used:
 - Vagrant
 - Pulumi
 - Docker
-
-Default preinstalled software:
-
 - Redis
 - ElasticSearch 7.x
 - Postgresql
 - Traefik
 - Node
+- Docker registry
 
 Example application that is connected to this cloud:
 
 <https://github.com/upolujksiazke-pl/upolujksiazke.pl>
 
 check `jobs/` folder with Nomad tasks / services.
+
+## Architecture
+
+```mermaid
+graph TD
+    subgraph "Server (192.168.56.10)"
+        A[Nomad server] -.-> B
+        B[Consul server]
+    end
+
+    B --> C
+    B --> E
+
+    subgraph "Client 1 (192.168.56.11)"
+        C[Nomad client] -.-> D
+        D[Consul agent]
+    end
+```
 
 ## Local testing
 
