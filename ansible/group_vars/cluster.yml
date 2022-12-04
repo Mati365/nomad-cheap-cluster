@@ -1,6 +1,8 @@
 server: front
 
 cluster_hostname: upolujksiazke.pl
+contact_person:
+  email: cziken58@gmail.com
 
 docker:
   volumes_path: "{{ remote_paths.www }}/volumes"

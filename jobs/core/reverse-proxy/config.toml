@@ -4,7 +4,7 @@ level = "debug"
 {% if env != 'dev' %}
 [certificatesresolvers]
    [certificatesresolvers.https-resolver.acme]
-    email = "cziken58@gmail.com"
+    email = "{{ contact_person.email }}"
     storage= "/letsencrypt/acme.json"
       [certificatesresolvers.https-resolver.acme.httpchallenge]
       entryPoint = "http"
