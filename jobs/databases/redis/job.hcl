@@ -44,7 +44,7 @@ job "cache" {
       driver = "docker"
 
       config {
-        image = "redis:6.0.16"
+        image = "redis:7.0.5"
         ports = ["db"]
         network_mode = "host"
       }
